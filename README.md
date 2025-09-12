@@ -14,3 +14,14 @@ printf()로 출력하는 한글이 깨져
 SetConsoleOutputCP(CP_UTF8);
 SetConsoleCP(CP_UTF8);
 ```
+
+# CheckList
+D1 O
+D2 O
+D3 X
+D4 O
+D5 O
+
+# Code Coverage
+code_coverage.png 스크린샷 참고 부탁드립니다.
+실제 coverage측정 결과는 coverage/index.html 에 있습니다.
