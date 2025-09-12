@@ -1,5 +1,7 @@
-﻿#pragma execution_character_set("utf-8")
+﻿#ifdef _WIN32
+#pragma execution_character_set("utf-8")
 #include <windows.h>
+#endif
 
 #ifdef _DEBUG
 #include "gmock/gmock.h"
@@ -18,6 +20,8 @@ int main() {
 #include <cstring>
 #include <cstdlib>
 #include <stdexcept>
+#include <chrono>
+#include <thread>
 
 #define CLEAR_SCREEN "\033[H\033[2J"
 
@@ -25,53 +29,52 @@ namespace {
     constexpr int NA = -1;
 };
 
-int stack[10];
+int settings[10];
 
 void SelectCarType(int answer);
 void SelectEngine(int answer);
-void SelectbrakeSystem(int answer);
-void SelectSteeringSystem(int answer);
+void SelectBrake(int answer);
+void SelectSteering(int answer);
 void RunProducedCar();
 void TestProducedCar();
-void delay(int ms);
+void Delay(int ms);
 
-enum QuestionType {
-    CarType_Q,
-    Engine_Q,
-    BrakeSystem_Q,
-    SteeringSystem_Q,
-    Run_Test,
+enum PageEnum {
+    eCarTypePage,
+    eEnginePage,
+    eBrakePage,
+    eSteeringPage,
+    eRunOrTestPage,
 };
 
-enum CarType {
-    SEDAN = 1,
-    SUV,
-    TRUCK
+enum CarEnum {
+    eSedanCar=1,
+    eSUVCar,
+    eTruckCar
 };
 
-enum Engine {
-    GM = 1,
-    TOYOTA,
-    WIA
+enum EngineEnum {
+    eGMEngine=1,
+    eTOYOTAEngine,
+    eWIAEngine
 };
 
-enum brakeSystem {
-    MANDO = 1,
-    CONTINENTAL,
-    BOSCH_B
+enum BrakeEnum {
+    eMANDOBrake=1,
+    eCONTINENTALBrake,
+    eBOSCHBrake
 };
 
-enum SteeringSystem {
-    BOSCH_S = 1,
-    MOBIS
+enum SteeringEnum {
+    eBOSCHSteering=1,
+    eMOBISSteering
 };
 
-void delay(int ms) {
-    Sleep(ms);
+void Delay(int ms) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
 inline void PrintChoiceCarTypePage() {
-    printf(CLEAR_SCREEN);
     printf("        ______________\n");
     printf("       /|            | \n");
     printf("  ____/_|_____________|____\n");
@@ -85,7 +88,6 @@ inline void PrintChoiceCarTypePage() {
 }
 
 inline void PrintChoiceEngineTypePage() {
-    printf(CLEAR_SCREEN);
     printf("어떤 엔진을 탑재할까요?\n");
     printf("0. 뒤로가기\n");
     printf("1. GM\n");
@@ -95,7 +97,6 @@ inline void PrintChoiceEngineTypePage() {
 }
 
 inline void PrintChoiceBrakeTypePage() {
-    printf(CLEAR_SCREEN);
     printf("어떤 제동장치를 선택할까요?\n");
     printf("0. 뒤로가기\n");
     printf("1. MANDO\n");
@@ -104,7 +105,6 @@ inline void PrintChoiceBrakeTypePage() {
 }
 
 inline void PrintChoiceSteeringTypePage() {
-    printf(CLEAR_SCREEN);
     printf("어떤 조향장치를 선택할까요?\n");
     printf("0. 뒤로가기\n");
     printf("1. BOSCH\n");
@@ -112,7 +112,6 @@ inline void PrintChoiceSteeringTypePage() {
 }
 
 inline void PrintChoiceRunAndTestPage() {
-    printf(CLEAR_SCREEN);
     printf("멋진 차량이 완성되었습니다.\n");
     printf("어떤 동작을 할까요?\n");
     printf("0. 처음 화면으로 돌아가기\n");
@@ -120,30 +119,24 @@ inline void PrintChoiceRunAndTestPage() {
     printf("2. Test\n");
 }
 
-inline void PrintChoicePage(int step) {
-    if(step == CarType_Q) {
+inline void PrintChoicePage(int page) {
+    printf(CLEAR_SCREEN);
+
+    if(page == eCarTypePage) {
         PrintChoiceCarTypePage();
     }
-    else if(step == Engine_Q) {
+    else if(page == eEnginePage) {
         PrintChoiceEngineTypePage();
     }
-    else if(step == BrakeSystem_Q) {
+    else if(page == eBrakePage) {
         PrintChoiceBrakeTypePage();
     }
-    else if(step == SteeringSystem_Q) {
+    else if(page == eSteeringPage) {
         PrintChoiceSteeringTypePage();
     }
-    else if(step == Run_Test) {
+    else if(page == eRunOrTestPage) {
         PrintChoiceRunAndTestPage();
     }
-}
-
-bool WhenSelectGoFirstPage(int answer, int step) {
-    return answer == 0 && step == Run_Test;
-}
-
-bool WhenSelectGoPreviousPage(int answer, int step) {
-    return answer == 0 && step >= 1;
 }
 
 bool WhenTypedExit(char *input) {
@@ -170,7 +163,7 @@ void RemoveEndNewLine(char *input) {
     strtok_s(input, "\n", &context);
 }
 
-void ValidateInput(char *input, int step) {
+void ValidateInput(char *input, int page) {
     // 숫자로 된 대답인지 확인
     char *checkNumber;
     int answer = strtol(input, &checkNumber, 10); // 문자열을 10진수로 변환
@@ -180,23 +173,23 @@ void ValidateInput(char *input, int step) {
         throw std::invalid_argument("숫자만 입력 가능");
     }
 
-    if(step == CarType_Q && !(answer >= 1 && answer <= 3)) {
+    if(page == eCarTypePage && !(answer >= 1 && answer <= 3)) {
         throw std::invalid_argument("차량 타입은 1 ~ 3 범위만 선택 가능");
     }
 
-    if(step == Engine_Q && !(answer >= 0 && answer <= 4)) {
+    if(page == eEnginePage && !(answer >= 0 && answer <= 4)) {
         throw std::invalid_argument("엔진은 1 ~ 4 범위만 선택 가능");
     }
 
-    if(step == BrakeSystem_Q && !(answer >= 0 && answer <= 3)) {
+    if(page == eBrakePage && !(answer >= 0 && answer <= 3)) {
         throw std::invalid_argument("제동장치는 1 ~ 3 범위만 선택 가능");
     }
 
-    if(step == SteeringSystem_Q && !(answer >= 0 && answer <= 2)) {
+    if(page == eSteeringPage && !(answer >= 0 && answer <= 2)) {
         throw std::invalid_argument("조향장치는 1 ~ 2 범위만 선택 가능");
     }
 
-    if(step == Run_Test && !(answer >= 0 && answer <= 2)) {
+    if(page == eRunOrTestPage && !(answer >= 0 && answer <= 2)) {
         throw std::invalid_argument("Run 또는 Test 중 하나를 선택 필요");
     }
 }
@@ -208,60 +201,95 @@ int ChangeInputTypeToInt(char *input) noexcept {
     return answer;
 }
 
-void SelectNextPage(int answer, int &step) {
+
+bool IsSelectFirstPage(int answer, int page) {
+    return answer == 0 && page == eRunOrTestPage;
+}
+
+bool IsSelectPreviousPage(int answer, int page) {
+    return answer == 0 && page >= 1;
+}
+
+bool IsSelectCarTypePage(int answer, int page) {
+    return page == eCarTypePage;
+}
+
+void SelectParts(int answer, int page) {
+    switch(page) {
+    case eCarTypePage: {
+        SelectCarType(answer);
+        Delay(800);
+        break;
+    }
+    case eEnginePage: {
+        SelectEngine(answer);
+        Delay(800);
+        break;
+    }
+    case eBrakePage: {
+        SelectBrake(answer);
+        Delay(800);
+        break;
+    }
+    case eSteeringPage: {
+        SelectSteering(answer);
+        Delay(800);
+        break;
+    }
+    case eRunOrTestPage: {
+        if(answer == 1) {
+            RunProducedCar();
+        }
+        else if(answer == 2) {
+            printf("Test...\n");
+            Delay(1500);
+            TestProducedCar();
+        }
+        Delay(2000);
+        break;
+    }
+    } //switch
+}
+
+
+void SelectNextPage(int answer, int &page) {
     // 처음으로 돌아가기
-    if(WhenSelectGoFirstPage(answer, step)) {
-        step = CarType_Q;
+    if(IsSelectFirstPage(answer, page)) {
+        page = eCarTypePage;
         return;
     }
 
     // 이전으로 돌아가기
-    if(WhenSelectGoPreviousPage(answer, step)) {
-        step -= 1;
+    if(IsSelectPreviousPage(answer, page)) {
+        page -= 1;
         return;
     }
 
-    if(step == CarType_Q) {
-        SelectCarType(answer);
-        delay(800);
-        step = Engine_Q;
+    if(page == eCarTypePage) {
+        page = eEnginePage;
     }
-    else if(step == Engine_Q) {
-        SelectEngine(answer);
-        delay(800);
-        step = BrakeSystem_Q;
+    else if(page == eEnginePage) {
+        page = eBrakePage;
     }
-    else if(step == BrakeSystem_Q) {
-        SelectbrakeSystem(answer);
-        delay(800);
-        step = SteeringSystem_Q;
+    else if(page == eBrakePage) {
+        page = eSteeringPage;
     }
-    else if(step == SteeringSystem_Q) {
-        SelectSteeringSystem(answer);
-        delay(800);
-        step = Run_Test;
-    }
-    else if(step == Run_Test && answer == 1) {
-        RunProducedCar();
-        delay(2000);
-    }
-    else if(step == Run_Test && answer == 2) {
-        printf("Test...\n");
-        delay(1500);
-        TestProducedCar();
-        delay(2000);
+    else if(page == eSteeringPage) {
+        page = eRunOrTestPage;
     }
 }
 
 int main() {
+#ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
+#endif
 
     char input[100];
-    int step = CarType_Q;
+    int current_page = eCarTypePage;
 
     while(1) {
-        PrintChoicePage(step);
+        PrintChoicePage(current_page);
 
         GetInput(input);
         RemoveEndNewLine(input);
@@ -271,23 +299,24 @@ int main() {
         }
 
         try {
-            ValidateInput(input, step);
+            ValidateInput(input, current_page);
         }
         catch(std::exception &ex) {
             printf("ERROR :: %s\n", ex.what());
-            delay(800);
+            Delay(800);
             continue;
         }
 
         int answer = ChangeInputTypeToInt(input);
-        SelectNextPage(answer, step);
+        SelectParts(answer, current_page);
+        SelectNextPage(answer, current_page);
     }
 
     return 0;
 }
 
 void SelectCarType(int answer) {
-    stack[CarType_Q] = answer;
+    settings[eCarTypePage] = answer;
     if(answer == 1)
         printf("차량 타입으로 Sedan을 선택하셨습니다.\n");
     if(answer == 2)
@@ -297,7 +326,7 @@ void SelectCarType(int answer) {
 }
 
 void SelectEngine(int answer) {
-    stack[Engine_Q] = answer;
+    settings[eEnginePage] = answer;
     if(answer == 1)
         printf("GM 엔진을 선택하셨습니다.\n");
     if(answer == 2)
@@ -306,8 +335,8 @@ void SelectEngine(int answer) {
         printf("WIA 엔진을 선택하셨습니다.\n");
 }
 
-void SelectbrakeSystem(int answer) {
-    stack[BrakeSystem_Q] = answer;
+void SelectBrake(int answer) {
+    settings[eBrakePage] = answer;
     if(answer == 1)
         printf("MANDO 제동장치를 선택하셨습니다.\n");
     if(answer == 2)
@@ -316,28 +345,46 @@ void SelectbrakeSystem(int answer) {
         printf("BOSCH 제동장치를 선택하셨습니다.\n");
 }
 
-void SelectSteeringSystem(int answer) {
-    stack[SteeringSystem_Q] = answer;
+void SelectSteering(int answer) {
+    settings[eSteeringPage] = answer;
     if(answer == 1)
         printf("BOSCH 조향장치를 선택하셨습니다.\n");
     if(answer == 2)
         printf("MOBIS 조향장치를 선택하셨습니다.\n");
 }
 
+static const char *car_type[4] = {"None", "Sedan", "SUV", "Truck" };
+static const char *engine_type[4] = {"None", "GM", "TOYOTA", "WIA" };
+static const char *brake_type[4] = {"None", "Mando", "Continental", "Bosch" };
+static const char *steering_type[3] = {"None", "Bosch", "Mobis" };
+
+const char *CurrentCarTypeToString() {
+    return car_type[settings[eCarTypePage]];
+}
+const char *CurrentEngineSettingToString() {
+    return engine_type[settings[eEnginePage]];
+}
+const char *CurrentBrakeSettingToString() {
+    return brake_type[settings[eBrakePage]];
+}
+const char *CurrentSteeringSettingToString() {
+    return steering_type[settings[eSteeringPage]];
+}
+
 int IsValidCheck() {
-    if(stack[CarType_Q] == SEDAN && stack[BrakeSystem_Q] == CONTINENTAL) {
+    if(settings[eCarTypePage] == eSedanCar && settings[eBrakePage] == eCONTINENTALBrake) {
         return false;
     }
-    else if(stack[CarType_Q] == SUV && stack[Engine_Q] == TOYOTA) {
+    else if(settings[eCarTypePage] == eSUVCar && settings[eEnginePage] == eTOYOTAEngine) {
         return false;
     }
-    else if(stack[CarType_Q] == TRUCK && stack[Engine_Q] == WIA) {
+    else if(settings[eCarTypePage] == eTruckCar && settings[eEnginePage] == eWIAEngine) {
         return false;
     }
-    else if(stack[CarType_Q] == TRUCK && stack[BrakeSystem_Q] == MANDO) {
+    else if(settings[eCarTypePage] == eTruckCar && settings[eBrakePage] == eMANDOBrake) {
         return false;
     }
-    else if(stack[BrakeSystem_Q] == BOSCH_B && stack[SteeringSystem_Q] != BOSCH_S) {
+    else if(settings[eBrakePage] == eBOSCHBrake && settings[eSteeringPage] != eBOSCHSteering) {
         return false;
     }
 
@@ -345,22 +392,22 @@ int IsValidCheck() {
 }
 
 void PrintAssembledCarType() {
-    static const char *car_type[3] = {"Sedan", "SUV", "Truck"};
-    printf("Car Type : %s\n", car_type[stack[CarType_Q]-1]);
+    static const char *car_type[3] = { "Sedan", "SUV", "Truck" };
+    printf("Car Type : %s\n", car_type[settings[eCarTypePage]-1]);
 }
 
 void PrintAssembledCarEngineType() {
-    static const char *engine_type[3] = {"GM", "TOYOTA", "WIA"};
-    printf("Engine : %s\n", engine_type[stack[Engine_Q]-1]);
+    static const char *engine_type[3] = { "GM", "TOYOTA", "WIA" };
+    printf("Engine : %s\n", engine_type[settings[eEnginePage]-1]);
 }
 
 void PrintAssembeldCarBrakeType() {
-    static const char *brake_type[3] = {"Mando", "Continental", "Bosch"};
-    printf("Brake System : %s\n", brake_type[stack[BrakeSystem_Q]-1]);
+    static const char *brake_type[3] = { "Mando", "Continental", "Bosch" };
+    printf("Brake System : %s\n", brake_type[settings[eBrakePage]-1]);
 }
 void PrintAssembledCarSteeringType() {
     static const char *steering_type[2] = { "Bosch", "Mobis" };
-    printf("SteeringSystem : %s\n", steering_type[stack[SteeringSystem_Q]-1]);
+    printf("SteeringSystem : %s\n", steering_type[settings[eSteeringPage]-1]);
 }
 
 void RunProducedCar() {
@@ -369,7 +416,7 @@ void RunProducedCar() {
         return;
     }
 
-    if(stack[Engine_Q] == 4) {
+    if(settings[eEnginePage] == 4) {
         printf("엔진이 고장나있습니다.\n");
         printf("자동차가 움직이지 않습니다.\n");
         return;
@@ -384,23 +431,23 @@ void RunProducedCar() {
 }
 
 void TestProducedCar() {
-    if(stack[CarType_Q] == SEDAN && stack[BrakeSystem_Q] == CONTINENTAL) {
+    if(settings[eCarTypePage] == eSedanCar && settings[eBrakePage] == eCONTINENTALBrake) {
         printf("자동차 부품 조합 테스트 결과 : FAIL\n");
         printf("Sedan에는 Continental제동장치 사용 불가\n");
     }
-    else if(stack[CarType_Q] == SUV && stack[Engine_Q] == TOYOTA) {
+    else if(settings[eCarTypePage] == eSUVCar && settings[eEnginePage] == eTOYOTAEngine) {
         printf("자동차 부품 조합 테스트 결과 : FAIL\n");
         printf("SUV에는 TOYOTA엔진 사용 불가\n");
     }
-    else if(stack[CarType_Q] == TRUCK && stack[Engine_Q] == WIA) {
+    else if(settings[eCarTypePage] == eTruckCar && settings[eEnginePage] == eWIAEngine) {
         printf("자동차 부품 조합 테스트 결과 : FAIL\n");
         printf("Truck에는 WIA엔진 사용 불가\n");
     }
-    else if(stack[CarType_Q] == TRUCK && stack[BrakeSystem_Q] == MANDO) {
+    else if(settings[eCarTypePage] == eTruckCar && settings[eBrakePage] == eMANDOBrake) {
         printf("자동차 부품 조합 테스트 결과 : FAIL\n");
         printf("Truck에는 Mando제동장치 사용 불가\n");
     }
-    else if(stack[BrakeSystem_Q] == BOSCH_B && stack[SteeringSystem_Q] != BOSCH_S) {
+    else if(settings[eBrakePage] == eBOSCHBrake && settings[eSteeringPage] != eBOSCHSteering) {
         printf("자동차 부품 조합 테스트 결과 : FAIL\n");
         printf("Bosch제동장치에는 Bosch조향장치 이외 사용 불가\n");
     }
