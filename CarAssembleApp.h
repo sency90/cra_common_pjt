@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <chrono>
 #include <thread>
+
 #include "Enum.h"
 
 #ifdef _WIN32
@@ -27,6 +28,8 @@ public:
         SetConsoleOutputCP(CP_UTF8);
         SetConsoleCP(CP_UTF8);
 #endif
+
+        memset(settings, 0, sizeof(settings));
     }
 
 public:
@@ -129,36 +132,7 @@ public:
         strtok_s(input, "\n", &context);
     }
 
-    void ValidateInput(const char *input, int page) {
-        // 숫자로 된 대답인지 확인
-        char *checkNumber;
-        int answer = strtol(input, &checkNumber, 10); // 문자열을 10진수로 변환
-
-        // 입력받은 문자가 숫자가 아니라면
-        if(*checkNumber != '\0') {
-            throw std::invalid_argument("숫자만 입력 가능");
-        }
-
-        if(page == eCarTypePage && !(answer >= 1 && answer <= 3)) {
-            throw std::invalid_argument("차량 타입은 1 ~ 3 범위만 선택 가능");
-        }
-
-        if(page == eEnginePage && !(answer >= 0 && answer <= 4)) {
-            throw std::invalid_argument("엔진은 1 ~ 4 범위만 선택 가능");
-        }
-
-        if(page == eBrakePage && !(answer >= 0 && answer <= 3)) {
-            throw std::invalid_argument("제동장치는 1 ~ 3 범위만 선택 가능");
-        }
-
-        if(page == eSteeringPage && !(answer >= 0 && answer <= 2)) {
-            throw std::invalid_argument("조향장치는 1 ~ 2 범위만 선택 가능");
-        }
-
-        if(page == eRunOrTestPage && !(answer >= 0 && answer <= 2)) {
-            throw std::invalid_argument("Run 또는 Test 중 하나를 선택 필요");
-        }
-    }
+    void ValidateInput(const char *input, int page);
 
     //ValidateInput()다음에 ChangeInputTypeToInt()가 실행되어야 한다.
     int ChangeInputTypeToInt(char *input) noexcept {
@@ -311,7 +285,7 @@ public:
     }
 
 
-    const char *CurrentCarTypeToString() {
+    const char *CurrentCarTypeSettingToString() {
         return car_type[settings[eCarTypePage]];
     }
     const char *CurrentEngineSettingToString() {
@@ -345,25 +319,18 @@ public:
     }
 
     void PrintAssembledCarType() {
-        //static const char *car_type[3] = { "Sedan", "SUV", "Truck" };
-        printf("Car Type : %s\n", CurrentCarTypeToString());
-        //printf("Car Type : %s\n", car_type[settings[eCarTypePage]-1]);
+        printf("Car Type : %s\n", CurrentCarTypeSettingToString());
     }
 
     void PrintAssembledCarEngineType() {
-        //static const char *engine_type[3] = { "GM", "TOYOTA", "WIA" };
         printf("Engine : %s\n", CurrentEngineSettingToString());
-        //printf("Engine : %s\n", engine_type[settings[eEnginePage]-1]);
     }
 
     void PrintAssembeldCarBrakeType() {
-        //static const char *brake_type[3] = { "Mando", "Continental", "Bosch" };
-        //printf("Brake System : %s\n", brake_type[settings[eBrakePage]-1]);
         printf("Brake System : %s\n", CurrentBrakeSettingToString());
     }
+
     void PrintAssembledCarSteeringType() {
-        //static const char *steering_type[2] = { "Bosch", "Mobis" };
-        //printf("SteeringSystem : %s\n", steering_type[settings[eSteeringPage]-1]);
         printf("SteeringSystem : %s\n", CurrentSteeringSettingToString());
     }
 
@@ -373,7 +340,7 @@ public:
             return;
         }
 
-        if(settings[eEnginePage] == 4) {
+        if(settings[eEnginePage] == eBrokenEngine) {
             printf("엔진이 고장나있습니다.\n");
             printf("자동차가 움직이지 않습니다.\n");
             return;

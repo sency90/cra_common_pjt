@@ -17,7 +17,8 @@ enum CarEnum {
 enum EngineEnum {
     eGMEngine=1,
     eTOYOTAEngine,
-    eWIAEngine
+    eWIAEngine,
+    eBrokenEngine
 };
 
 enum BrakeEnum {

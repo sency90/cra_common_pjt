@@ -11,7 +11,95 @@
         <pre class="prettyprint lang-cpp linenums">
 ï»¿#include "gmock/gmock.h"
 
-<span style = "background-color:#dfd">TEST(TS1, TC1) {
+#include &lt;cstdio&gt;
+#include &lt;cstring&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+
+#include "CarAssembleApp.h"
+#include "Enum.h"
+
+using ::testing::Test;
+
+class CarAssembleAppTestFixture : public Test{
+protected:
+    
+    CarAssembleApp app;
+    int settings[10];
+
+    void SetSettings(
+        CarEnum car_type,
+        EngineEnum engine_type,
+        BrakeEnum brake_type,
+        SteeringEnum steering_type
+    ) {
+        settings[PageEnum::eCarTypePage] = car_type;
+        settings[PageEnum::eEnginePage] = engine_type;
+        settings[PageEnum::eBrakePage] = brake_type;
+        settings[PageEnum::eSteeringPage] = steering_type;
+    }
+};
+
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, ValidateInput_WhenNotDigit) {
+    std::string input = "a1";
+    EXPECT_THROW({</span>
+    app.ValidateInput(input.c_str(), eCarTypePage);
+        }, std::invalid_argument);
+<span style = "background-color:#dfd">}
+TEST_F(CarAssembleAppTestFixture, ValidateInput_CarTypeNoOnCarTypePage) {
+    std::vector&lt;std::string&gt; exception_inputs = { "0", "4" };
+    for(auto input : exception_inputs) {
+        EXPECT_THROW({ app.ValidateInput(input.c_str(), eCarTypePage); }, std::invalid_argument);
+    }</span>
+
+<span style = "background-color:#dfd">    std::vector&lt;std::string&gt; normal_inputs = {"1", "2", "3"};
+    for(auto input : normal_inputs) {
+        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), eCarTypePage); });
+    }
+}
+TEST_F(CarAssembleAppTestFixture, ValidateInput_EngineTypeNoOnEnginePage) {
+    std::vector&lt;std::string&gt; exception_inputs = { "-1", "5" };
+    for(auto input : exception_inputs) {
+        EXPECT_THROW({ app.ValidateInput(input.c_str(), eEnginePage); }, std::invalid_argument);
+    }</span>
+
+<span style = "background-color:#dfd">    std::vector&lt;std::string&gt; normal_inputs = {"0", "1", "2", "3", "4"};
+    for(auto input : normal_inputs) {
+        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), eEnginePage); });
+    }
+}
+TEST_F(CarAssembleAppTestFixture, ValidateInput_BrakeTypeNoOnBrakePage) {
+    std::vector&lt;std::string&gt; exception_inputs = { "-1", "4" };
+    for(auto input : exception_inputs) {
+        EXPECT_THROW({ app.ValidateInput(input.c_str(), eBrakePage); }, std::invalid_argument);
+    }</span>
+
+<span style = "background-color:#dfd">    std::vector&lt;std::string&gt; normal_inputs = {"0", "1", "2", "3"};
+    for(auto input : normal_inputs) {
+        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), eBrakePage); });
+    }
+}
+TEST_F(CarAssembleAppTestFixture, ValidateInput_SteeringTypeNoOnSteeringPage) {
+    std::vector&lt;std::string&gt; exception_inputs = { "-1", "3" };
+    for(auto input : exception_inputs) {
+        EXPECT_THROW({ app.ValidateInput(input.c_str(), eSteeringPage); }, std::invalid_argument);
+    }</span>
+
+<span style = "background-color:#dfd">    std::vector&lt;std::string&gt; normal_inputs = {"0", "1", "2"};
+    for(auto input : normal_inputs) {
+        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), eSteeringPage); });
+    }
+}
+TEST_F(CarAssembleAppTestFixture, ValidateInput_OnRunOrTestPage) {
+    std::vector&lt;std::string&gt; exception_inputs = { "-1", "3" };
+    for(auto input : exception_inputs) {
+        EXPECT_THROW({ app.ValidateInput(input.c_str(), eRunOrTestPage); }, std::invalid_argument);
+    }</span>
+
+<span style = "background-color:#dfd">    std::vector&lt;std::string&gt; normal_inputs = {"0", "1", "2"};
+    for(auto input : normal_inputs) {
+        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), eRunOrTestPage); });
+    }
 }</span></pre>
         <hr />
         <table width="100%">
