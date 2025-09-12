@@ -7,12 +7,29 @@
 #include <thread>
 #include "Enum.h"
 
+#ifdef _WIN32
+#pragma execution_character_set("utf-8")
+#include <windows.h>
+#endif
+
 #define CLEAR_SCREEN "\033[H\033[2J"
 
 class CarAssembleApp {
 public:
     int settings[10];
+    const char *car_type[4] = { "None", "Sedan", "SUV", "Truck" };
+    const char *engine_type[4] = { "None", "GM", "TOYOTA", "WIA" };
+    const char *brake_type[4] = { "None", "Mando", "Continental", "Bosch" };
+    const char *steering_type[3] = { "None", "Bosch", "Mobis" };
 
+    CarAssembleApp() {
+#ifdef _WIN32
+        SetConsoleOutputCP(CP_UTF8);
+        SetConsoleCP(CP_UTF8);
+#endif
+    }
+
+public:
     void Delay(int ms) {
 #if _DEBUG
         std::this_thread::sleep_for(std::chrono::milliseconds(ms/10));
@@ -112,7 +129,7 @@ public:
         strtok_s(input, "\n", &context);
     }
 
-    void ValidateInput(char *input, int page) {
+    void ValidateInput(const char *input, int page) {
         // 숫자로 된 대답인지 확인
         char *checkNumber;
         int answer = strtol(input, &checkNumber, 10); // 문자열을 10진수로 변환
@@ -149,8 +166,6 @@ public:
         int answer = strtol(input, &checkNumber, 10); // 문자열을 10진수로 변환
         return answer;
     }
-
-
 
     bool IsStartPage(int page) {
         return page == eCarTypePage;
@@ -259,46 +274,42 @@ public:
 
     void SelectCarType(int answer) {
         settings[eCarTypePage] = answer;
-        if(answer == 1)
+        if(answer == eSedanCar)
             printf("차량 타입으로 Sedan을 선택하셨습니다.\n");
-        if(answer == 2)
+        if(answer == eSUVCar)
             printf("차량 타입으로 SUV을 선택하셨습니다.\n");
-        if(answer == 3)
+        if(answer == eTruckCar)
             printf("차량 타입으로 Truck을 선택하셨습니다.\n");
     }
 
     void SelectEngine(int answer) {
         settings[eEnginePage] = answer;
-        if(answer == 1)
+        if(answer == eGMEngine)
             printf("GM 엔진을 선택하셨습니다.\n");
-        if(answer == 2)
+        if(answer == eTOYOTAEngine)
             printf("TOYOTA 엔진을 선택하셨습니다.\n");
-        if(answer == 3)
+        if(answer == eWIAEngine)
             printf("WIA 엔진을 선택하셨습니다.\n");
     }
 
     void SelectBrake(int answer) {
         settings[eBrakePage] = answer;
-        if(answer == 1)
+        if(answer == eMANDOBrake)
             printf("MANDO 제동장치를 선택하셨습니다.\n");
-        if(answer == 2)
+        if(answer == eCONTINENTALBrake)
             printf("CONTINENTAL 제동장치를 선택하셨습니다.\n");
-        if(answer == 3)
+        if(answer == eBOSCHBrake)
             printf("BOSCH 제동장치를 선택하셨습니다.\n");
     }
 
     void SelectSteering(int answer) {
         settings[eSteeringPage] = answer;
-        if(answer == 1)
+        if(answer == eBOSCHSteering)
             printf("BOSCH 조향장치를 선택하셨습니다.\n");
-        if(answer == 2)
+        if(answer == eMOBISSteering)
             printf("MOBIS 조향장치를 선택하셨습니다.\n");
     }
 
-    const char *car_type[4] = { "None", "Sedan", "SUV", "Truck" };
-    const char *engine_type[4] = { "None", "GM", "TOYOTA", "WIA" };
-    const char *brake_type[4] = { "None", "Mando", "Continental", "Bosch" };
-    const char *steering_type[3] = { "None", "Bosch", "Mobis" };
 
     const char *CurrentCarTypeToString() {
         return car_type[settings[eCarTypePage]];
