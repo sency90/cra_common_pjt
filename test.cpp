@@ -359,3 +359,142 @@ TEST(CarAssembleAppRunTest, InvalidInput_ShowsError_ThenExit) {
     EXPECT_THAT(out, HasSubstr("바이바이"));
 }
 
+TEST(CarAssembleAppRunTest, FullFlow_TestFail_SedanContinentalBrake_ThenExit) {
+    MockCarAssembleApp app;
+    InSequence seq;
+
+    static char s1[] = "1"; //sedan
+    static char s2[] = "1";
+    static char s3[] = "2"; //continental
+    static char s4[] = "1";
+    static char s5[] = "2";
+    static char s6[] = "exit";
+
+    EXPECT_CALL(app, GetInput())
+        .WillOnce(Return(s1))
+        .WillOnce(Return(s2))
+        .WillOnce(Return(s3))
+        .WillOnce(Return(s4))
+        .WillOnce(Return(s5))
+        .WillOnce(Return(s6));
+
+    ::testing::internal::CaptureStdout();
+    EXPECT_THROW(app.Run(), ExitCalled);
+    std::string out = ::testing::internal::GetCapturedStdout();
+
+    EXPECT_THAT(out, HasSubstr("자동차 부품 조합 테스트 결과 : FAIL"));
+    EXPECT_THAT(out, HasSubstr("Sedan에는 Continental제동장치 사용 불가"));
+    EXPECT_THAT(out, HasSubstr("바이바이"));
+}
+
+TEST(CarAssembleAppRunTest, FullFlow_TestFail_SuvToyotaEngine_ThenExit) {
+    MockCarAssembleApp app;
+    InSequence seq;
+
+    static char s1[] = "2"; //SUV
+    static char s2[] = "2"; //Toyota
+    static char s3[] = "1";
+    static char s4[] = "1";
+    static char s5[] = "2";
+    static char s6[] = "exit";
+
+    EXPECT_CALL(app, GetInput())
+        .WillOnce(Return(s1))
+        .WillOnce(Return(s2))
+        .WillOnce(Return(s3))
+        .WillOnce(Return(s4))
+        .WillOnce(Return(s5))
+        .WillOnce(Return(s6));
+
+    ::testing::internal::CaptureStdout();
+    EXPECT_THROW(app.Run(), ExitCalled);
+    std::string out = ::testing::internal::GetCapturedStdout();
+
+    EXPECT_THAT(out, HasSubstr("자동차 부품 조합 테스트 결과 : FAIL"));
+    EXPECT_THAT(out, HasSubstr("SUV에는 TOYOTA엔진 사용 불가"));
+    EXPECT_THAT(out, HasSubstr("바이바이"));
+}
+
+TEST(CarAssembleAppRunTest, FullFlow_TestFail_TruckWIAEngine_ThenExit) {
+    MockCarAssembleApp app;
+    InSequence seq;
+
+    static char s1[] = "3"; //Truck
+    static char s2[] = "3"; //Toyota
+    static char s3[] = "1";
+    static char s4[] = "1";
+    static char s5[] = "2";
+    static char s6[] = "exit";
+
+    EXPECT_CALL(app, GetInput())
+        .WillOnce(Return(s1))
+        .WillOnce(Return(s2))
+        .WillOnce(Return(s3))
+        .WillOnce(Return(s4))
+        .WillOnce(Return(s5))
+        .WillOnce(Return(s6));
+
+    ::testing::internal::CaptureStdout();
+    EXPECT_THROW(app.Run(), ExitCalled);
+    std::string out = ::testing::internal::GetCapturedStdout();
+
+    EXPECT_THAT(out, HasSubstr("자동차 부품 조합 테스트 결과 : FAIL"));
+    EXPECT_THAT(out, HasSubstr("Truck에는 WIA엔진 사용 불가"));
+    EXPECT_THAT(out, HasSubstr("바이바이"));
+}
+
+TEST(CarAssembleAppRunTest, FullFlow_TestFail_TruckMandoBrake_ThenExit) {
+    MockCarAssembleApp app;
+    InSequence seq;
+
+    static char s1[] = "3"; //Truck
+    static char s2[] = "1"; //Toyota
+    static char s3[] = "1"; //Mando
+    static char s4[] = "1";
+    static char s5[] = "2";
+    static char s6[] = "exit";
+
+    EXPECT_CALL(app, GetInput())
+        .WillOnce(Return(s1))
+        .WillOnce(Return(s2))
+        .WillOnce(Return(s3))
+        .WillOnce(Return(s4))
+        .WillOnce(Return(s5))
+        .WillOnce(Return(s6));
+
+    ::testing::internal::CaptureStdout();
+    EXPECT_THROW(app.Run(), ExitCalled);
+    std::string out = ::testing::internal::GetCapturedStdout();
+
+    EXPECT_THAT(out, HasSubstr("자동차 부품 조합 테스트 결과 : FAIL"));
+    EXPECT_THAT(out, HasSubstr("Truck에는 Mando제동장치 사용 불가"));
+    EXPECT_THAT(out, HasSubstr("바이바이"));
+}
+
+TEST(CarAssembleAppRunTest, FullFlow_TestFail_BoschBrakeNotBoshSteering_ThenExit) {
+    MockCarAssembleApp app;
+    InSequence seq;
+
+    static char s1[] = "1";
+    static char s2[] = "1";
+    static char s3[] = "3"; //bosh brake
+    static char s4[] = "2"; //not bosch (mobis) steering
+    static char s5[] = "2";
+    static char s6[] = "exit";
+
+    EXPECT_CALL(app, GetInput())
+        .WillOnce(Return(s1))
+        .WillOnce(Return(s2))
+        .WillOnce(Return(s3))
+        .WillOnce(Return(s4))
+        .WillOnce(Return(s5))
+        .WillOnce(Return(s6));
+
+    ::testing::internal::CaptureStdout();
+    EXPECT_THROW(app.Run(), ExitCalled);
+    std::string out = ::testing::internal::GetCapturedStdout();
+
+    EXPECT_THAT(out, HasSubstr("자동차 부품 조합 테스트 결과 : FAIL"));
+    EXPECT_THAT(out, HasSubstr("Bosch제동장치에는 Bosch조향장치 이외 사용 불가"));
+    EXPECT_THAT(out, HasSubstr("바이바이"));
+}

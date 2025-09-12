@@ -257,39 +257,39 @@
     settings[eCarTypePage] = answer;
     if(answer == eSedanCar)
         printf("ì°¨ë íìì¼ë¡ Sedanì ì ííì¨ìµëë¤.\n");
-    if(answer == eSUVCar)</span>
-<span style = "background-color:#fdd">        printf("ì°¨ë íìì¼ë¡ SUVì ì ííì¨ìµëë¤.\n");</span>
-<span style = "background-color:#dfd">    if(answer == eTruckCar)</span>
-<span style = "background-color:#fdd">        printf("ì°¨ë íìì¼ë¡ Truckì ì ííì¨ìµëë¤.\n");</span>
-<span style = "background-color:#dfd">}</span>
+    if(answer == eSUVCar)
+        printf("ì°¨ë íìì¼ë¡ SUVì ì ííì¨ìµëë¤.\n");
+    if(answer == eTruckCar)
+        printf("ì°¨ë íìì¼ë¡ Truckì ì ííì¨ìµëë¤.\n");
+}</span>
 
 <span style = "background-color:#dfd">void CarAssembleApp::SelectEngine(int answer) {
     settings[eEnginePage] = answer;
     if(answer == eGMEngine)
         printf("GM ìì§ì ì ííì¨ìµëë¤.\n");
-    if(answer == eTOYOTAEngine)</span>
-<span style = "background-color:#fdd">        printf("TOYOTA ìì§ì ì ííì¨ìµëë¤.\n");</span>
-<span style = "background-color:#dfd">    if(answer == eWIAEngine)</span>
-<span style = "background-color:#fdd">        printf("WIA ìì§ì ì ííì¨ìµëë¤.\n");</span>
-<span style = "background-color:#dfd">}</span>
+    if(answer == eTOYOTAEngine)
+        printf("TOYOTA ìì§ì ì ííì¨ìµëë¤.\n");
+    if(answer == eWIAEngine)
+        printf("WIA ìì§ì ì ííì¨ìµëë¤.\n");
+}</span>
 
 <span style = "background-color:#dfd">void CarAssembleApp::SelectBrake(int answer) {
     settings[eBrakePage] = answer;
     if(answer == eMANDOBrake)
         printf("MANDO ì ëì¥ì¹ë¥¼ ì ííì¨ìµëë¤.\n");
-    if(answer == eCONTINENTALBrake)</span>
-<span style = "background-color:#fdd">        printf("CONTINENTAL ì ëì¥ì¹ë¥¼ ì ííì¨ìµëë¤.\n");</span>
-<span style = "background-color:#dfd">    if(answer == eBOSCHBrake)</span>
-<span style = "background-color:#fdd">        printf("BOSCH ì ëì¥ì¹ë¥¼ ì ííì¨ìµëë¤.\n");</span>
-<span style = "background-color:#dfd">}</span>
+    if(answer == eCONTINENTALBrake)
+        printf("CONTINENTAL ì ëì¥ì¹ë¥¼ ì ííì¨ìµëë¤.\n");
+    if(answer == eBOSCHBrake)
+        printf("BOSCH ì ëì¥ì¹ë¥¼ ì ííì¨ìµëë¤.\n");
+}</span>
 
 <span style = "background-color:#dfd">void CarAssembleApp::SelectSteering(int answer) {
     settings[eSteeringPage] = answer;
     if(answer == eBOSCHSteering)
         printf("BOSCH ì¡°í¥ì¥ì¹ë¥¼ ì ííì¨ìµëë¤.\n");
-    if(answer == eMOBISSteering)</span>
-<span style = "background-color:#fdd">        printf("MOBIS ì¡°í¥ì¥ì¹ë¥¼ ì ííì¨ìµëë¤.\n");</span>
-<span style = "background-color:#dfd">}</span>
+    if(answer == eMOBISSteering)
+        printf("MOBIS ì¡°í¥ì¥ì¹ë¥¼ ì ííì¨ìµëë¤.\n");
+}</span>
 
 <span style = "background-color:#dfd">const char *CarAssembleApp::CurrentCarTypeSettingToString() {
     return car_type[settings[eCarTypePage]];
@@ -364,24 +364,24 @@
 }</span>
 
 <span style = "background-color:#dfd">void CarAssembleApp::TestProducedCar() {
-    if(settings[eCarTypePage] == eSedanCar &amp;&amp; settings[eBrakePage] == eCONTINENTALBrake) {</span>
-<span style = "background-color:#fdd">        printf("ìëì°¨ ë¶í ì¡°í© íì¤í¸ ê²°ê³¼ : FAIL\n");
+    if(settings[eCarTypePage] == eSedanCar &amp;&amp; settings[eBrakePage] == eCONTINENTALBrake) {
+        printf("ìëì°¨ ë¶í ì¡°í© íì¤í¸ ê²°ê³¼ : FAIL\n");
         printf("Sedanìë Continentalì ëì¥ì¹ ì¬ì© ë¶ê°\n");
-    }</span>
-<span style = "background-color:#dfd">    else if(settings[eCarTypePage] == eSUVCar &amp;&amp; settings[eEnginePage] == eTOYOTAEngine) {</span>
-<span style = "background-color:#fdd">        printf("ìëì°¨ ë¶í ì¡°í© íì¤í¸ ê²°ê³¼ : FAIL\n");
+    }
+    else if(settings[eCarTypePage] == eSUVCar &amp;&amp; settings[eEnginePage] == eTOYOTAEngine) {
+        printf("ìëì°¨ ë¶í ì¡°í© íì¤í¸ ê²°ê³¼ : FAIL\n");
         printf("SUVìë TOYOTAìì§ ì¬ì© ë¶ê°\n");
-    }</span>
-<span style = "background-color:#dfd">    else if(settings[eCarTypePage] == eTruckCar &amp;&amp; settings[eEnginePage] == eWIAEngine) {</span>
-<span style = "background-color:#fdd">        printf("ìëì°¨ ë¶í ì¡°í© íì¤í¸ ê²°ê³¼ : FAIL\n");
+    }
+    else if(settings[eCarTypePage] == eTruckCar &amp;&amp; settings[eEnginePage] == eWIAEngine) {
+        printf("ìëì°¨ ë¶í ì¡°í© íì¤í¸ ê²°ê³¼ : FAIL\n");
         printf("Truckìë WIAìì§ ì¬ì© ë¶ê°\n");
-    }</span>
-<span style = "background-color:#dfd">    else if(settings[eCarTypePage] == eTruckCar &amp;&amp; settings[eBrakePage] == eMANDOBrake) {</span>
-<span style = "background-color:#fdd">        printf("ìëì°¨ ë¶í ì¡°í© íì¤í¸ ê²°ê³¼ : FAIL\n");
+    }
+    else if(settings[eCarTypePage] == eTruckCar &amp;&amp; settings[eBrakePage] == eMANDOBrake) {
+        printf("ìëì°¨ ë¶í ì¡°í© íì¤í¸ ê²°ê³¼ : FAIL\n");
         printf("Truckìë Mandoì ëì¥ì¹ ì¬ì© ë¶ê°\n");
-    }</span>
-<span style = "background-color:#dfd">    else if(settings[eBrakePage] == eBOSCHBrake &amp;&amp; settings[eSteeringPage] != eBOSCHSteering) {</span>
-<span style = "background-color:#fdd">        printf("ìëì°¨ ë¶í ì¡°í© íì¤í¸ ê²°ê³¼ : FAIL\n");
+    }
+    else if(settings[eBrakePage] == eBOSCHBrake &amp;&amp; settings[eSteeringPage] != eBOSCHSteering) {
+        printf("ìëì°¨ ë¶í ì¡°í© íì¤í¸ ê²°ê³¼ : FAIL\n");
         printf("Boschì ëì¥ì¹ìë Boschì¡°í¥ì¥ì¹ ì´ì¸ ì¬ì© ë¶ê°\n");
     }</span>
     else {
