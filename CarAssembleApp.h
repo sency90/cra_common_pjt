@@ -43,7 +43,7 @@ public:
 
     bool WhenTypedExit(char *input);
 
-    void ExitProgram();
+    virtual void ExitProgram();
 
     virtual char *GetInput();
 
