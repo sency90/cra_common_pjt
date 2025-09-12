@@ -498,3 +498,8 @@ TEST(CarAssembleAppRunTest, FullFlow_TestFail_BoschBrakeNotBoshSteering_ThenExit
     EXPECT_THAT(out, HasSubstr("Bosch제동장치에는 Bosch조향장치 이외 사용 불가"));
     EXPECT_THAT(out, HasSubstr("바이바이"));
 }
+
+TEST(CarAssembleAppRunTest, TC1) {
+    MockCarAssembleApp app;
+    EXPECT_TRUE(app.IsStartPage(eCarTypePage));
+}
