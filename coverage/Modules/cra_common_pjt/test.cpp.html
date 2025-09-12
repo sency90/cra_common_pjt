@@ -10,14 +10,23 @@
         <h4></h4>
         <pre class="prettyprint lang-cpp linenums">
 ï»¿#include "gmock/gmock.h"
+#ifdef _WIN32
+#pragma execution_character_set("utf-8")
+#include &lt;windows.h&gt;
+#endif
 
 #include &lt;cstdio&gt;
 #include &lt;cstring&gt;
 #include &lt;vector&gt;
 #include &lt;string&gt;
+#include &lt;memory&gt;
 
 #include "CarAssembleApp.h"
 #include "Enum.h"
+
+#ifndef CLEAR_SCREEN
+#define CLEAR_SCREEN "\033[H\033[2J"
+#endif
 
 using ::testing::Test;
 
@@ -25,19 +34,26 @@ class CarAssembleAppTestFixture : public Test{
 protected:
     
     CarAssembleApp app;
-    int settings[10];
+    const int NONE_SETTING_TYPE{0};
 
     void SetSettings(
-        CarEnum car_type,
-        EngineEnum engine_type,
-        BrakeEnum brake_type,
-        SteeringEnum steering_type
+        int car_type,
+        int engine_type,
+        int brake_type,
+<span style = "background-color:#dfd">        int steering_type</span>
     ) {
-        settings[PageEnum::eCarTypePage] = car_type;
-        settings[PageEnum::eEnginePage] = engine_type;
-        settings[PageEnum::eBrakePage] = brake_type;
-        settings[PageEnum::eSteeringPage] = steering_type;
-    }
+<span style = "background-color:#dfd">        app.settings[PageEnum::eCarTypePage] = car_type;
+        app.settings[PageEnum::eEnginePage] = engine_type;
+        app.settings[PageEnum::eBrakePage] = brake_type;
+        app.settings[PageEnum::eSteeringPage] = steering_type;
+    }</span>
+
+<span style = "background-color:#dfd">    void SetUp() {</span>
+#ifdef _WIN32
+<span style = "background-color:#dfd">        SetConsoleOutputCP(CP_UTF8);
+        SetConsoleCP(CP_UTF8);</span>
+#endif
+<span style = "background-color:#dfd">    }</span>
 };
 
 <span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, ValidateInput_WhenNotDigit) {
@@ -100,6 +116,183 @@ TEST_F(CarAssembleAppTestFixture, ValidateInput_OnRunOrTestPage) {
     for(auto input : normal_inputs) {
         EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), eRunOrTestPage); });
     }
+}
+TEST_F(CarAssembleAppTestFixture, NotWorkingSedan) {
+    SetSettings(eSedanCar, NONE_SETTING_TYPE, eCONTINENTALBrake, NONE_SETTING_TYPE);</span>
+
+<span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
+    app.RunProducedCar();
+    std::string actual = ::testing::internal::GetCapturedStdout();
+    EXPECT_EQ(actual, "ìëì°¨ê° ëìëì§ ììµëë¤\n");
+}</span>
+
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, NotWorkingSUV) {
+    SetSettings(eSUVCar, eTOYOTAEngine, NONE_SETTING_TYPE, NONE_SETTING_TYPE);</span>
+
+<span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
+    app.RunProducedCar();
+    std::string actual = ::testing::internal::GetCapturedStdout();
+    EXPECT_EQ(actual, "ìëì°¨ê° ëìëì§ ììµëë¤\n");
+}</span>
+
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, NotWorkingTruck) {
+    SetSettings(eTruckCar, eWIAEngine, NONE_SETTING_TYPE, NONE_SETTING_TYPE);</span>
+
+<span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
+    app.RunProducedCar();
+    std::string actual = ::testing::internal::GetCapturedStdout();
+    EXPECT_EQ(actual, "ìëì°¨ê° ëìëì§ ììµëë¤\n");
+}</span>
+
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, NotWorkingTruck2) {
+    SetSettings(eTruckCar, NONE_SETTING_TYPE, eMANDOBrake, NONE_SETTING_TYPE);</span>
+
+<span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
+    app.RunProducedCar();
+    std::string actual = ::testing::internal::GetCapturedStdout();
+    EXPECT_EQ(actual, "ìëì°¨ê° ëìëì§ ììµëë¤\n");
+}</span>
+
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, NotWorkingTruck3) {
+    SetSettings(eTruckCar, eWIAEngine, eMANDOBrake, NONE_SETTING_TYPE);</span>
+
+<span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
+    app.RunProducedCar();
+    std::string actual = ::testing::internal::GetCapturedStdout();
+    EXPECT_EQ(actual, "ìëì°¨ê° ëìëì§ ììµëë¤\n");
+}</span>
+
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, NotWorkingBoschBrakeAndSteering) {
+    SetSettings(NONE_SETTING_TYPE, NONE_SETTING_TYPE, eBOSCHBrake, eMOBISSteering);</span>
+
+<span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
+    app.RunProducedCar();
+    std::string actual = ::testing::internal::GetCapturedStdout();
+    EXPECT_EQ(actual, "ìëì°¨ê° ëìëì§ ììµëë¤\n");
+}
+TEST_F(CarAssembleAppTestFixture, NotWorkingBorkenEngine) {
+    SetSettings(NONE_SETTING_TYPE, eBrokenEngine, NONE_SETTING_TYPE, NONE_SETTING_TYPE);</span>
+
+<span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
+    app.RunProducedCar();
+    std::string actual = ::testing::internal::GetCapturedStdout();
+    std::string expected =</span>
+        "ìì§ì´ ê³ ì¥ëììµëë¤.\n"
+        "ìëì°¨ê° ìì§ì´ì§ ììµëë¤.\n";
+<span style = "background-color:#dfd">    EXPECT_EQ(actual, expected);
+}</span>
+
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, WorkingCar) {
+    SetSettings(eSedanCar, eGMEngine, eMANDOBrake, eBOSCHSteering);</span>
+
+<span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
+    app.RunProducedCar();
+    std::string actual = ::testing::internal::GetCapturedStdout();</span>
+
+<span style = "background-color:#dfd">    std::stringstream ss;
+    ss &lt;&lt; "Car Type : " &lt;&lt; app.CurrentCarTypeSettingToString() &lt;&lt; "\n";
+    ss &lt;&lt; "Engine : " &lt;&lt; app.CurrentEngineSettingToString() &lt;&lt; "\n";
+    ss &lt;&lt; "Brake System : " &lt;&lt; app.CurrentBrakeSettingToString() &lt;&lt; "\n";
+    ss &lt;&lt; "SteeringSystem : " &lt;&lt; app.CurrentSteeringSettingToString() &lt;&lt; "\n";
+    ss &lt;&lt; "ìëì°¨ê° ëìë©ëë¤.\n";</span>
+
+<span style = "background-color:#dfd">    std::string expected = ss.str();
+    EXPECT_EQ(actual, expected);
+}</span>
+
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, PrintChoicePage1) {
+    ::testing::internal::CaptureStdout();
+    app.PrintChoicePage(eCarTypePage);
+    std::string actual = ::testing::internal::GetCapturedStdout();</span>
+
+<span style = "background-color:#dfd">    std::stringstream ss;
+    ss &lt;&lt; CLEAR_SCREEN;
+    ss &lt;&lt; ("        ______________\n");
+    ss &lt;&lt; ("       /|            | \n");
+    ss &lt;&lt; ("  ____/_|_____________|____\n");
+    ss &lt;&lt; (" |                      O  |\n");
+    ss &lt;&lt; (" '-(@)----------------(@)--'\n");
+    ss &lt;&lt; ("===============================\n");
+    ss &lt;&lt; ("ì´ë¤ ì°¨ë íìì ì íí ê¹ì?\n");
+    ss &lt;&lt; ("1. Sedan\n");
+    ss &lt;&lt; ("2. SUV\n");
+    ss &lt;&lt; ("3. Truck\n");
+    ss &lt;&lt; ("===============================\n");</span>
+    
+<span style = "background-color:#dfd">    std::string expected = ss.str();
+    EXPECT_EQ(actual, expected);
+}</span>
+
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, PrintChoicePage2) {
+    ::testing::internal::CaptureStdout();
+    app.PrintChoicePage(eEnginePage);
+    std::string actual = ::testing::internal::GetCapturedStdout();</span>
+
+<span style = "background-color:#dfd">    std::stringstream ss;
+    ss &lt;&lt; CLEAR_SCREEN;
+    ss &lt;&lt; ("ì´ë¤ ìì§ì íì¬í ê¹ì?\n");
+    ss &lt;&lt; ("0. ë¤ë¡ê°ê¸°\n");
+    ss &lt;&lt; ("1. GM\n");
+    ss &lt;&lt; ("2. TOYOTA\n");
+    ss &lt;&lt; ("3. WIA\n");
+    ss &lt;&lt; ("4. ê³ ì¥ë ìì§\n");
+    ss &lt;&lt; ("===============================\n");</span>
+    
+<span style = "background-color:#dfd">    std::string expected = ss.str();
+    EXPECT_EQ(actual, expected);
+}</span>
+
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, PrintChoicePage3) {
+    ::testing::internal::CaptureStdout();
+    app.PrintChoicePage(eBrakePage);
+    std::string actual = ::testing::internal::GetCapturedStdout();</span>
+
+<span style = "background-color:#dfd">    std::stringstream ss;
+    ss &lt;&lt; CLEAR_SCREEN;
+    ss &lt;&lt; ("ì´ë¤ ì ëì¥ì¹ë¥¼ ì íí ê¹ì?\n");
+    ss &lt;&lt; ("0. ë¤ë¡ê°ê¸°\n");
+    ss &lt;&lt; ("1. MANDO\n");
+    ss &lt;&lt; ("2. CONTINENTAL\n");
+    ss &lt;&lt; ("3. BOSCH\n");
+    ss &lt;&lt; ("===============================\n");</span>
+    
+<span style = "background-color:#dfd">    std::string expected = ss.str();
+    EXPECT_EQ(actual, expected);
+}</span>
+
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, PrintChoicePage4) {
+    ::testing::internal::CaptureStdout();
+    app.PrintChoicePage(eSteeringPage);
+    std::string actual = ::testing::internal::GetCapturedStdout();</span>
+
+<span style = "background-color:#dfd">    std::stringstream ss;
+    ss &lt;&lt; CLEAR_SCREEN;
+    ss &lt;&lt; ("ì´ë¤ ì¡°í¥ì¥ì¹ë¥¼ ì íí ê¹ì?\n");
+    ss &lt;&lt; ("0. ë¤ë¡ê°ê¸°\n");
+    ss &lt;&lt; ("1. BOSCH\n");
+    ss &lt;&lt; ("2. MOBIS\n");
+    ss &lt;&lt; ("===============================\n");</span>
+    
+<span style = "background-color:#dfd">    std::string expected = ss.str();
+    EXPECT_EQ(actual, expected);
+}</span>
+
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, PrintChoicePage5) {
+    ::testing::internal::CaptureStdout();
+    app.PrintChoicePage(eRunOrTestPage);
+    std::string actual = ::testing::internal::GetCapturedStdout();</span>
+
+<span style = "background-color:#dfd">    std::stringstream ss;
+    ss &lt;&lt; CLEAR_SCREEN;
+    ss &lt;&lt; ("ë©ì§ ì°¨ëì´ ìì±ëììµëë¤.\n");
+    ss &lt;&lt; ("ì´ë¤ ëìì í ê¹ì?\n");
+    ss &lt;&lt; ("0. ì²ì íë©´ì¼ë¡ ëìê°ê¸°\n");
+    ss &lt;&lt; ("1. RUN\n");
+    ss &lt;&lt; ("2. Test\n");
+    ss &lt;&lt; ("===============================\n");</span>
+    
+<span style = "background-color:#dfd">    std::string expected = ss.str();
+    EXPECT_EQ(actual, expected);
 }</span></pre>
         <hr />
         <table width="100%">

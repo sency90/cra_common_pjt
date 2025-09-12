@@ -13,7 +13,16 @@
 #include "CarAssembleApp.h"
 #include "Enum.h"
 
+#ifndef CLEAR_SCREEN
+#define CLEAR_SCREEN "\033[H\033[2J"
+#endif
+
 using ::testing::Test;
+
+class MockCarAssembleApp: public CarAssembleApp {
+public:
+    MOCK_METHOD(char*, GetInput, (), (override));
+};
 
 class CarAssembleAppTestFixture : public Test{
 protected:
@@ -185,3 +194,97 @@ TEST_F(CarAssembleAppTestFixture, WorkingCar) {
     EXPECT_EQ(actual, expected);
 }
 
+TEST_F(CarAssembleAppTestFixture, PrintChoicePage1) {
+    ::testing::internal::CaptureStdout();
+    app.PrintChoicePage(eCarTypePage);
+    std::string actual = ::testing::internal::GetCapturedStdout();
+
+    std::stringstream ss;
+    ss << CLEAR_SCREEN;
+    ss << ("        ______________\n");
+    ss << ("       /|            | \n");
+    ss << ("  ____/_|_____________|____\n");
+    ss << (" |                      O  |\n");
+    ss << (" '-(@)----------------(@)--'\n");
+    ss << ("===============================\n");
+    ss << ("어떤 차량 타입을 선택할까요?\n");
+    ss << ("1. Sedan\n");
+    ss << ("2. SUV\n");
+    ss << ("3. Truck\n");
+    ss << ("===============================\n");
+    
+    std::string expected = ss.str();
+    EXPECT_EQ(actual, expected);
+}
+
+TEST_F(CarAssembleAppTestFixture, PrintChoicePage2) {
+    ::testing::internal::CaptureStdout();
+    app.PrintChoicePage(eEnginePage);
+    std::string actual = ::testing::internal::GetCapturedStdout();
+
+    std::stringstream ss;
+    ss << CLEAR_SCREEN;
+    ss << ("어떤 엔진을 탑재할까요?\n");
+    ss << ("0. 뒤로가기\n");
+    ss << ("1. GM\n");
+    ss << ("2. TOYOTA\n");
+    ss << ("3. WIA\n");
+    ss << ("4. 고장난 엔진\n");
+    ss << ("===============================\n");
+    
+    std::string expected = ss.str();
+    EXPECT_EQ(actual, expected);
+}
+
+TEST_F(CarAssembleAppTestFixture, PrintChoicePage3) {
+    ::testing::internal::CaptureStdout();
+    app.PrintChoicePage(eBrakePage);
+    std::string actual = ::testing::internal::GetCapturedStdout();
+
+    std::stringstream ss;
+    ss << CLEAR_SCREEN;
+    ss << ("어떤 제동장치를 선택할까요?\n");
+    ss << ("0. 뒤로가기\n");
+    ss << ("1. MANDO\n");
+    ss << ("2. CONTINENTAL\n");
+    ss << ("3. BOSCH\n");
+    ss << ("===============================\n");
+    
+    std::string expected = ss.str();
+    EXPECT_EQ(actual, expected);
+}
+
+TEST_F(CarAssembleAppTestFixture, PrintChoicePage4) {
+    ::testing::internal::CaptureStdout();
+    app.PrintChoicePage(eSteeringPage);
+    std::string actual = ::testing::internal::GetCapturedStdout();
+
+    std::stringstream ss;
+    ss << CLEAR_SCREEN;
+    ss << ("어떤 조향장치를 선택할까요?\n");
+    ss << ("0. 뒤로가기\n");
+    ss << ("1. BOSCH\n");
+    ss << ("2. MOBIS\n");
+    ss << ("===============================\n");
+    
+    std::string expected = ss.str();
+    EXPECT_EQ(actual, expected);
+}
+
+TEST_F(CarAssembleAppTestFixture, PrintChoicePage5) {
+    ::testing::internal::CaptureStdout();
+    app.PrintChoicePage(eRunOrTestPage);
+    std::string actual = ::testing::internal::GetCapturedStdout();
+
+    std::stringstream ss;
+    ss << CLEAR_SCREEN;
+    ss << ("멋진 차량이 완성되었습니다.\n");
+    ss << ("어떤 동작을 할까요?\n");
+    ss << ("0. 처음 화면으로 돌아가기\n");
+    ss << ("1. RUN\n");
+    ss << ("2. Test\n");
+    ss << ("===============================\n");
+    
+    std::string expected = ss.str();
+    EXPECT_EQ(actual, expected);
+}
