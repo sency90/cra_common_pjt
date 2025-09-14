@@ -2,6 +2,13 @@
 #include "BrakeType.h"
 #include "CommonFunction.h"
 #include <string>
+
+enum BrakeEnum {
+    eMANDOBrake=1,
+    eCONTINENTALBrake,
+    eBOSCHBrake
+};
+
 class BrakeTypeFactory {
 public:
     static IBrakeType *Create(const std::string & name);

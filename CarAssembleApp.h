@@ -24,6 +24,14 @@
 
 #define CLEAR_SCREEN "\033[H\033[2J"
 
+enum PageEnum {
+    eCarTypePage,
+    eEnginePage,
+    eBrakePage,
+    eSteeringPage,
+    eRunOrTestPage,
+};
+
 class CarAssembleApp {
 public:
     ICarType *car_type;

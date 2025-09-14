@@ -242,71 +242,22 @@ int CarAssembleApp::Run() {
 }
 
 void CarAssembleApp::SelectCarType(int answer) {
-    if(answer == eSedanCar) {
-        car_type = CarTypeFactory::Create("Sedan");
-    }
-    else if(answer == eSUVCar) {
-        car_type = CarTypeFactory::Create("SUV");
-    }
-    else if(answer == eTruckCar) {
-        car_type = CarTypeFactory::Create("Truck");
-    }
-    else {
-        car_type = nullptr;
-        throw std::runtime_error("잘못된 CarType 선택 ($answer:" + std::to_string(answer) + ")" );
-    }
-
+    car_type = CarTypeFactory::Create(answer);
     printf("차량 타입으로 %s을 선택하셨습니다.\n", car_type->GetName().c_str());
 }
 
 void CarAssembleApp::SelectEngine(int answer) {
-    if(answer == eGMEngine) {
-        engine_type = EngineTypeFactory::Create("GM");
-    }
-    else if(answer == eTOYOTAEngine) {
-        engine_type = EngineTypeFactory::Create("TOYOTA");
-    }
-    else if(answer == eWIAEngine) {
-        engine_type = EngineTypeFactory::Create("WIA");
-    }
-    else {
-        engine_type = nullptr;
-        throw std::runtime_error("잘못된 EngineType 선택 ($answer:" + std::to_string(answer) + ")");
-    }
-
+    engine_type = EngineTypeFactory::Create(answer);
     printf("%s 엔진을 선택하셨습니다.\n", engine_type->GetName().c_str());
 }
 
 void CarAssembleApp::SelectBrake(int answer) {
-    if(answer == eMANDOBrake) {
-        brake_type = BrakeTypeFactory::Create("MANDO");
-    }
-    else if(answer == eCONTINENTALBrake) {
-        brake_type = BrakeTypeFactory::Create("CONTINENTAL");
-    }
-    else if(answer == eBOSCHBrake) {
-        brake_type = BrakeTypeFactory::Create("BOSCH");
-    }
-    else {
-        brake_type = nullptr;
-        throw std::runtime_error("잘못된 BrakeType 선택 ($answer:" + std::to_string(answer) + ")");
-    }
-
-    printf("%s 제동장치를 선택하셨습니다.\n");
+    brake_type = BrakeTypeFactory::Create(answer);
+    printf("%s 제동장치를 선택하셨습니다.\n", brake_type->GetName().c_str());
 }
 
 void CarAssembleApp::SelectSteering(int answer) {
-    if(answer == eBOSCHSteering) {
-        steering_type = SteeringTypeFactory::Create("BOSCH");
-    }
-    else if(answer == eMOBISSteering) {
-        steering_type = SteeringTypeFactory::Create("MOBIS");
-    }
-    else {
-        steering_type = nullptr;
-        throw std::runtime_error("잘못된 SteeringType 선택 ($answer:" + std::to_string(answer) + ")");
-    }
-
+    steering_type = SteeringTypeFactory::Create(answer);
     printf("%s 조향장치를 선택하셨습니다.\n", steering_type->GetName().c_str());
 }
 

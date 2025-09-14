@@ -98,5 +98,8 @@
     <ClInclude Include="SteeringTypeFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IParts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

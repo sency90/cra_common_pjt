@@ -154,6 +154,7 @@
     <ClInclude Include="EngineType.h" />
     <ClInclude Include="EngineTypeFactory.h" />
     <ClInclude Include="Enum.h" />
+    <ClInclude Include="IParts.h" />
     <ClInclude Include="SteeringType.h" />
     <ClInclude Include="SteeringTypeFactory.h" />
   </ItemGroup>
