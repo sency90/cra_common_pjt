@@ -76,6 +76,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -90,6 +91,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -102,6 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -116,6 +119,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -123,8 +127,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BrakeType.cpp" />
+    <ClCompile Include="BrakeTypeFactory.cpp" />
     <ClCompile Include="CarAssembleApp.cpp" />
+    <ClCompile Include="CarType.cpp" />
+    <ClCompile Include="CarTypeFactory.cpp" />
+    <ClCompile Include="CommonFunction.cpp" />
+    <ClCompile Include="EngineType.cpp" />
+    <ClCompile Include="EngineTypeFactory.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="SteeringType.cpp" />
+    <ClCompile Include="SteeringTypeFactory.cpp" />
     <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -132,8 +145,17 @@
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BrakeType.h" />
+    <ClInclude Include="BrakeTypeFactory.h" />
     <ClInclude Include="CarAssembleApp.h" />
+    <ClInclude Include="CarType.h" />
+    <ClInclude Include="CarTypeFactory.h" />
+    <ClInclude Include="CommonFunction.h" />
+    <ClInclude Include="EngineType.h" />
+    <ClInclude Include="EngineTypeFactory.h" />
     <ClInclude Include="Enum.h" />
+    <ClInclude Include="SteeringType.h" />
+    <ClInclude Include="SteeringTypeFactory.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

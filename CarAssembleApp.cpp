@@ -5,7 +5,6 @@ CarAssembleApp::CarAssembleApp() {
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
 #endif
-    memset(settings, 0, sizeof(settings));
 }
 
 void CarAssembleApp::PrintChoiceCarTypePage() {
@@ -243,73 +242,89 @@ int CarAssembleApp::Run() {
 }
 
 void CarAssembleApp::SelectCarType(int answer) {
-    settings[eCarTypePage] = answer;
-    if(answer == eSedanCar)
-        printf("차량 타입으로 Sedan을 선택하셨습니다.\n");
-    if(answer == eSUVCar)
-        printf("차량 타입으로 SUV을 선택하셨습니다.\n");
-    if(answer == eTruckCar)
-        printf("차량 타입으로 Truck을 선택하셨습니다.\n");
+    if(answer == eSedanCar) {
+        car_type = CarTypeFactory::Create("Sedan");
+    }
+    else if(answer == eSUVCar) {
+        car_type = CarTypeFactory::Create("SUV");
+    }
+    else if(answer == eTruckCar) {
+        car_type = CarTypeFactory::Create("Truck");
+    }
+    else {
+        car_type = nullptr;
+        throw std::runtime_error("잘못된 CarType 선택 ($answer:" + std::to_string(answer) + ")" );
+    }
+
+    printf("차량 타입으로 %s을 선택하셨습니다.\n", car_type->GetName().c_str());
 }
 
 void CarAssembleApp::SelectEngine(int answer) {
-    settings[eEnginePage] = answer;
-    if(answer == eGMEngine)
-        printf("GM 엔진을 선택하셨습니다.\n");
-    if(answer == eTOYOTAEngine)
-        printf("TOYOTA 엔진을 선택하셨습니다.\n");
-    if(answer == eWIAEngine)
-        printf("WIA 엔진을 선택하셨습니다.\n");
+    if(answer == eGMEngine) {
+        engine_type = EngineTypeFactory::Create("GM");
+    }
+    else if(answer == eTOYOTAEngine) {
+        engine_type = EngineTypeFactory::Create("TOYOTA");
+    }
+    else if(answer == eWIAEngine) {
+        engine_type = EngineTypeFactory::Create("WIA");
+    }
+    else {
+        engine_type = nullptr;
+        throw std::runtime_error("잘못된 EngineType 선택 ($answer:" + std::to_string(answer) + ")");
+    }
+
+    printf("%s 엔진을 선택하셨습니다.\n", engine_type->GetName().c_str());
 }
 
 void CarAssembleApp::SelectBrake(int answer) {
-    settings[eBrakePage] = answer;
-    if(answer == eMANDOBrake)
-        printf("MANDO 제동장치를 선택하셨습니다.\n");
-    if(answer == eCONTINENTALBrake)
-        printf("CONTINENTAL 제동장치를 선택하셨습니다.\n");
-    if(answer == eBOSCHBrake)
-        printf("BOSCH 제동장치를 선택하셨습니다.\n");
+    if(answer == eMANDOBrake) {
+        brake_type = BrakeTypeFactory::Create("MANDO");
+    }
+    else if(answer == eCONTINENTALBrake) {
+        brake_type = BrakeTypeFactory::Create("CONTINENTAL");
+    }
+    else if(answer == eBOSCHBrake) {
+        brake_type = BrakeTypeFactory::Create("BOSCH");
+    }
+    else {
+        brake_type = nullptr;
+        throw std::runtime_error("잘못된 BrakeType 선택 ($answer:" + std::to_string(answer) + ")");
+    }
+
+    printf("%s 제동장치를 선택하셨습니다.\n");
 }
 
 void CarAssembleApp::SelectSteering(int answer) {
-    settings[eSteeringPage] = answer;
-    if(answer == eBOSCHSteering)
-        printf("BOSCH 조향장치를 선택하셨습니다.\n");
-    if(answer == eMOBISSteering)
-        printf("MOBIS 조향장치를 선택하셨습니다.\n");
-}
+    if(answer == eBOSCHSteering) {
+        steering_type = SteeringTypeFactory::Create("BOSCH");
+    }
+    else if(answer == eMOBISSteering) {
+        steering_type = SteeringTypeFactory::Create("MOBIS");
+    }
+    else {
+        steering_type = nullptr;
+        throw std::runtime_error("잘못된 SteeringType 선택 ($answer:" + std::to_string(answer) + ")");
+    }
 
-const char *CarAssembleApp::CurrentCarTypeSettingToString() {
-    return car_type[settings[eCarTypePage]];
-}
-
-const char *CarAssembleApp::CurrentEngineSettingToString() {
-    return engine_type[settings[eEnginePage]];
-}
-
-const char *CarAssembleApp::CurrentBrakeSettingToString() {
-    return brake_type[settings[eBrakePage]];
-}
-
-const char *CarAssembleApp::CurrentSteeringSettingToString() {
-    return steering_type[settings[eSteeringPage]];
+    printf("%s 조향장치를 선택하셨습니다.\n", steering_type->GetName().c_str());
 }
 
 int CarAssembleApp::IsValidCheck() {
-    if(settings[eCarTypePage] == eSedanCar && settings[eBrakePage] == eCONTINENTALBrake) {
+    CommonFunction &cf = CommonFunction::GetInstance();
+    if(cf.EqualsIgnoreCase(car_type->GetName(),"Sedan") && cf.EqualsIgnoreCase(brake_type->GetName(),"CONTINENTAL")) {
         return false;
     }
-    else if(settings[eCarTypePage] == eSUVCar && settings[eEnginePage] == eTOYOTAEngine) {
+    else if(cf.EqualsIgnoreCase(car_type->GetName(), "SUV") && cf.EqualsIgnoreCase(engine_type->GetName(), "TOYOTA")) {
         return false;
     }
-    else if(settings[eCarTypePage] == eTruckCar && settings[eEnginePage] == eWIAEngine) {
+    else if(cf.EqualsIgnoreCase(car_type->GetName(), "Truck") && cf.EqualsIgnoreCase(engine_type->GetName(), "WIA")) {
         return false;
     }
-    else if(settings[eCarTypePage] == eTruckCar && settings[eBrakePage] == eMANDOBrake) {
+    else if(cf.EqualsIgnoreCase(car_type->GetName(), "Truck") && cf.EqualsIgnoreCase(brake_type->GetName(), "MANDO")) {
         return false;
     }
-    else if(settings[eBrakePage] == eBOSCHBrake && settings[eSteeringPage] != eBOSCHSteering) {
+    else if(cf.EqualsIgnoreCase(brake_type->GetName(), "BOSCH") && false==cf.EqualsIgnoreCase(steering_type->GetName(), "BOSCH")) {
         return false;
     }
 
@@ -317,19 +332,19 @@ int CarAssembleApp::IsValidCheck() {
 }
 
 void CarAssembleApp::PrintAssembledCarType() {
-    printf("Car Type : %s\n", CurrentCarTypeSettingToString());
+    printf("Car Type : %s\n", car_type->GetName().c_str());
 }
 
 void CarAssembleApp::PrintAssembledCarEngineType() {
-    printf("Engine : %s\n", CurrentEngineSettingToString());
+    printf("Engine : %s\n", engine_type->GetName().c_str());
 }
 
 void CarAssembleApp::PrintAssembeldCarBrakeType() {
-    printf("Brake System : %s\n", CurrentBrakeSettingToString());
+    printf("Brake System : %s\n", brake_type->GetName().c_str());
 }
 
 void CarAssembleApp::PrintAssembledCarSteeringType() {
-    printf("SteeringSystem : %s\n", CurrentSteeringSettingToString());
+    printf("SteeringSystem : %s\n", steering_type->GetName().c_str());
 }
 
 void CarAssembleApp::RunProducedCar() {
@@ -338,7 +353,7 @@ void CarAssembleApp::RunProducedCar() {
         return;
     }
 
-    if(settings[eEnginePage] == eBrokenEngine) {
+    if(engine_type->GetName() == "BROKEN") {
         printf("엔진이 고장나있습니다.\n");
         printf("자동차가 움직이지 않습니다.\n");
         return;
@@ -353,23 +368,24 @@ void CarAssembleApp::RunProducedCar() {
 }
 
 void CarAssembleApp::TestProducedCar() {
-    if(settings[eCarTypePage] == eSedanCar && settings[eBrakePage] == eCONTINENTALBrake) {
+    CommonFunction &cf = CommonFunction::GetInstance();
+    if(cf.EqualsIgnoreCase(car_type->GetName(), "Sedan") && cf.EqualsIgnoreCase(brake_type->GetName(), "CONTINENTAL")) {
         printf("자동차 부품 조합 테스트 결과 : FAIL\n");
         printf("Sedan에는 Continental제동장치 사용 불가\n");
     }
-    else if(settings[eCarTypePage] == eSUVCar && settings[eEnginePage] == eTOYOTAEngine) {
+    else if(cf.EqualsIgnoreCase(car_type->GetName(), "SUV") && cf.EqualsIgnoreCase(engine_type->GetName(), "TOYOTA")) {
         printf("자동차 부품 조합 테스트 결과 : FAIL\n");
         printf("SUV에는 TOYOTA엔진 사용 불가\n");
     }
-    else if(settings[eCarTypePage] == eTruckCar && settings[eEnginePage] == eWIAEngine) {
+    else if(cf.EqualsIgnoreCase(car_type->GetName(), "Truck") && cf.EqualsIgnoreCase(engine_type->GetName(), "WIA")) {
         printf("자동차 부품 조합 테스트 결과 : FAIL\n");
         printf("Truck에는 WIA엔진 사용 불가\n");
     }
-    else if(settings[eCarTypePage] == eTruckCar && settings[eBrakePage] == eMANDOBrake) {
+    else if(cf.EqualsIgnoreCase(car_type->GetName(), "Truck") && cf.EqualsIgnoreCase(brake_type->GetName(), "MANDO")) {
         printf("자동차 부품 조합 테스트 결과 : FAIL\n");
         printf("Truck에는 Mando제동장치 사용 불가\n");
     }
-    else if(settings[eBrakePage] == eBOSCHBrake && settings[eSteeringPage] != eBOSCHSteering) {
+    else if(cf.EqualsIgnoreCase(brake_type->GetName(), "BOSCH") && false == cf.EqualsIgnoreCase(steering_type->GetName(), "BOSCH")) {
         printf("자동차 부품 조합 테스트 결과 : FAIL\n");
         printf("Bosch제동장치에는 Bosch조향장치 이외 사용 불가\n");
     }

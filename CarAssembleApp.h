@@ -7,6 +7,15 @@
 #include <thread>
 
 #include "Enum.h"
+#include "CarType.h"
+#include "CarTypeFactory.h"
+#include "EngineType.h"
+#include "EngineTypeFactory.h"
+#include "BrakeType.h"
+#include "BrakeTypeFactory.h"
+#include "SteeringType.h"
+#include "SteeringTypeFactory.h"
+#include "CommonFunction.h"
 
 #ifdef _WIN32
 #pragma execution_character_set("utf-8")
@@ -17,11 +26,15 @@
 
 class CarAssembleApp {
 public:
-    int settings[10];
-    const char *car_type[4] = { "None", "Sedan", "SUV", "Truck" };
-    const char *engine_type[4] = { "None", "GM", "TOYOTA", "WIA" };
-    const char *brake_type[4] = { "None", "Mando", "Continental", "Bosch" };
-    const char *steering_type[3] = { "None", "Bosch", "Mobis" };
+    ICarType *car_type;
+    IEngineType *engine_type;
+    IBrakeType *brake_type;
+    ISteeringType *steering_type;
+    //int settings[10];
+    //const char *car_type[4] = { "None", "Sedan", "SUV", "Truck" };
+    //const char *engine_type[4] = { "None", "GM", "TOYOTA", "WIA" };
+    //const char *brake_type[4] = { "None", "Mando", "Continental", "Bosch" };
+    //const char *steering_type[3] = { "None", "Bosch", "Mobis" };
 
     CarAssembleApp();
 
@@ -77,12 +90,6 @@ public:
     void SelectBrake(int answer);
 
     void SelectSteering(int answer);
-
-
-    const char *CurrentCarTypeSettingToString();
-    const char *CurrentEngineSettingToString();
-    const char *CurrentBrakeSettingToString();
-    const char *CurrentSteeringSettingToString();
 
     int IsValidCheck();
 
