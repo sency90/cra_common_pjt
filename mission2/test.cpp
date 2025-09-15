@@ -11,7 +11,7 @@
 #include <memory>
 
 #include "CarAssembleApp.h"
-#include "Enum.h"
+#include "PageEnum.h"
 
 #ifndef CLEAR_SCREEN
 #define CLEAR_SCREEN "\033[H\033[2J"
@@ -46,10 +46,10 @@ protected:
         int brake_type,
         int steering_type
     ) {
-        app.settings[PageEnum::eCarTypePage] = car_type;
-        app.settings[PageEnum::eEnginePage] = engine_type;
-        app.settings[PageEnum::eBrakePage] = brake_type;
-        app.settings[PageEnum::eSteeringPage] = steering_type;
+        app.car_type = CarTypeFactory::Create(car_type);
+        app.engine_type = EngineTypeFactory::Create(engine_type);
+        app.brake_type = BrakeTypeFactory::Create(brake_type);
+        app.steering_type = SteeringTypeFactory::Create(steering_type);
     }
 
     void SetUp() {
@@ -63,62 +63,62 @@ protected:
 TEST_F(CarAssembleAppTestFixture, ValidateInput_WhenNotDigit) {
     std::string input = "a1";
     EXPECT_THROW({
-    app.ValidateInput(input.c_str(), eCarTypePage);
+    app.ValidateInput(input.c_str(), PageEnum::eCarTypePage);
         }, std::invalid_argument);
 }
 TEST_F(CarAssembleAppTestFixture, ValidateInput_CarTypeNoOnCarTypePage) {
     std::vector<std::string> exception_inputs = { "0", "4" };
     for(auto input : exception_inputs) {
-        EXPECT_THROW({ app.ValidateInput(input.c_str(), eCarTypePage); }, std::invalid_argument);
+        EXPECT_THROW({ app.ValidateInput(input.c_str(), PageEnum::eCarTypePage); }, std::invalid_argument);
     }
 
     std::vector<std::string> normal_inputs = { "1", "2", "3" };
     for(auto input : normal_inputs) {
-        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), eCarTypePage); });
+        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), PageEnum::eCarTypePage); });
     }
 }
 TEST_F(CarAssembleAppTestFixture, ValidateInput_EngineTypeNoOnEnginePage) {
     std::vector<std::string> exception_inputs = { "-1", "5" };
     for(auto input : exception_inputs) {
-        EXPECT_THROW({ app.ValidateInput(input.c_str(), eEnginePage); }, std::invalid_argument);
+        EXPECT_THROW({ app.ValidateInput(input.c_str(), PageEnum::eEnginePage); }, std::invalid_argument);
     }
 
     std::vector<std::string> normal_inputs = { "0", "1", "2", "3", "4" };
     for(auto input : normal_inputs) {
-        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), eEnginePage); });
+        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), PageEnum::eEnginePage); });
     }
 }
 TEST_F(CarAssembleAppTestFixture, ValidateInput_BrakeTypeNoOnBrakePage) {
     std::vector<std::string> exception_inputs = { "-1", "4" };
     for(auto input : exception_inputs) {
-        EXPECT_THROW({ app.ValidateInput(input.c_str(), eBrakePage); }, std::invalid_argument);
+        EXPECT_THROW({ app.ValidateInput(input.c_str(), PageEnum::eBrakePage); }, std::invalid_argument);
     }
 
     std::vector<std::string> normal_inputs = { "0", "1", "2", "3" };
     for(auto input : normal_inputs) {
-        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), eBrakePage); });
+        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), PageEnum::eBrakePage); });
     }
 }
 TEST_F(CarAssembleAppTestFixture, ValidateInput_SteeringTypeNoOnSteeringPage) {
     std::vector<std::string> exception_inputs = { "-1", "3" };
     for(auto input : exception_inputs) {
-        EXPECT_THROW({ app.ValidateInput(input.c_str(), eSteeringPage); }, std::invalid_argument);
+        EXPECT_THROW({ app.ValidateInput(input.c_str(), PageEnum::eSteeringPage); }, std::invalid_argument);
     }
 
     std::vector<std::string> normal_inputs = { "0", "1", "2" };
     for(auto input : normal_inputs) {
-        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), eSteeringPage); });
+        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), PageEnum::eSteeringPage); });
     }
 }
 TEST_F(CarAssembleAppTestFixture, ValidateInput_OnRunOrTestPage) {
     std::vector<std::string> exception_inputs = { "-1", "3" };
     for(auto input : exception_inputs) {
-        EXPECT_THROW({ app.ValidateInput(input.c_str(), eRunOrTestPage); }, std::invalid_argument);
+        EXPECT_THROW({ app.ValidateInput(input.c_str(), PageEnum::eRunOrTestPage); }, std::invalid_argument);
     }
 
     std::vector<std::string> normal_inputs = { "0", "1", "2" };
     for(auto input : normal_inputs) {
-        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), eRunOrTestPage); });
+        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), PageEnum::eRunOrTestPage); });
     }
 }
 TEST_F(CarAssembleAppTestFixture, NotWorkingSedan) {
@@ -129,7 +129,6 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingSedan) {
     std::string actual = ::testing::internal::GetCapturedStdout();
     EXPECT_EQ(actual, "자동차가 동작되지 않습니다\n");
 }
-
 TEST_F(CarAssembleAppTestFixture, NotWorkingSUV) {
     SetSettings(eSUVCar, eTOYOTAEngine, NONE_SETTING_TYPE, NONE_SETTING_TYPE);
 
@@ -138,7 +137,6 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingSUV) {
     std::string actual = ::testing::internal::GetCapturedStdout();
     EXPECT_EQ(actual, "자동차가 동작되지 않습니다\n");
 }
-
 TEST_F(CarAssembleAppTestFixture, NotWorkingTruck) {
     SetSettings(eTruckCar, eWIAEngine, NONE_SETTING_TYPE, NONE_SETTING_TYPE);
 
@@ -147,7 +145,6 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingTruck) {
     std::string actual = ::testing::internal::GetCapturedStdout();
     EXPECT_EQ(actual, "자동차가 동작되지 않습니다\n");
 }
-
 TEST_F(CarAssembleAppTestFixture, NotWorkingTruck2) {
     SetSettings(eTruckCar, NONE_SETTING_TYPE, eMANDOBrake, NONE_SETTING_TYPE);
 
@@ -156,7 +153,6 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingTruck2) {
     std::string actual = ::testing::internal::GetCapturedStdout();
     EXPECT_EQ(actual, "자동차가 동작되지 않습니다\n");
 }
-
 TEST_F(CarAssembleAppTestFixture, NotWorkingTruck3) {
     SetSettings(eTruckCar, eWIAEngine, eMANDOBrake, NONE_SETTING_TYPE);
 
@@ -165,13 +161,21 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingTruck3) {
     std::string actual = ::testing::internal::GetCapturedStdout();
     EXPECT_EQ(actual, "자동차가 동작되지 않습니다\n");
 }
-
 TEST_F(CarAssembleAppTestFixture, NotWorkingBoschBrakeAndSteering) {
     SetSettings(NONE_SETTING_TYPE, NONE_SETTING_TYPE, eBOSCHBrake, eMOBISSteering);
 
     ::testing::internal::CaptureStdout();
     app.RunProducedCar();
     std::string actual = ::testing::internal::GetCapturedStdout();
+    EXPECT_EQ(actual, "자동차가 동작되지 않습니다\n");
+}
+TEST_F(CarAssembleAppTestFixture, NotWorkingUnknownSteeringType) {
+    SetSettings(NONE_SETTING_TYPE, NONE_SETTING_TYPE, eBOSCHBrake, NONE_SETTING_TYPE);
+
+    ::testing::internal::CaptureStdout();
+    app.RunProducedCar();
+    std::string actual = ::testing::internal::GetCapturedStdout();
+    printf("[%s]\n", actual.c_str());
     EXPECT_EQ(actual, "자동차가 동작되지 않습니다\n");
 }
 TEST_F(CarAssembleAppTestFixture, NotWorkingBorkenEngine) {
@@ -185,7 +189,6 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingBorkenEngine) {
         "자동차가 움직이지 않습니다.\n";
     EXPECT_EQ(actual, expected);
 }
-
 TEST_F(CarAssembleAppTestFixture, WorkingCar) {
     SetSettings(eSedanCar, eGMEngine, eMANDOBrake, eBOSCHSteering);
 
@@ -194,19 +197,18 @@ TEST_F(CarAssembleAppTestFixture, WorkingCar) {
     std::string actual = ::testing::internal::GetCapturedStdout();
 
     std::stringstream ss;
-    ss << "Car Type : " << app.CurrentCarTypeSettingToString() << "\n";
-    ss << "Engine : " << app.CurrentEngineSettingToString() << "\n";
-    ss << "Brake System : " << app.CurrentBrakeSettingToString() << "\n";
-    ss << "SteeringSystem : " << app.CurrentSteeringSettingToString() << "\n";
+    ss << "Car Type : " << app.car_type->GetName() << "\n";
+    ss << "Engine : " << app.engine_type->GetName() << "\n";
+    ss << "Brake System : " << app.brake_type->GetName() << "\n";
+    ss << "SteeringSystem : " << app.steering_type->GetName() << "\n";
     ss << "자동차가 동작됩니다.\n";
 
     std::string expected = ss.str();
     EXPECT_EQ(actual, expected);
 }
-
 TEST_F(CarAssembleAppTestFixture, PrintChoicePage1) {
     ::testing::internal::CaptureStdout();
-    app.PrintChoicePage(eCarTypePage);
+    app.pm.PrintPage(PageEnum::eCarTypePage);
     std::string actual = ::testing::internal::GetCapturedStdout();
 
     std::stringstream ss;
@@ -226,10 +228,9 @@ TEST_F(CarAssembleAppTestFixture, PrintChoicePage1) {
     std::string expected = ss.str();
     EXPECT_EQ(actual, expected);
 }
-
 TEST_F(CarAssembleAppTestFixture, PrintChoicePage2) {
     ::testing::internal::CaptureStdout();
-    app.PrintChoicePage(eEnginePage);
+    app.pm.PrintPage(PageEnum::eEnginePage);
     std::string actual = ::testing::internal::GetCapturedStdout();
 
     std::stringstream ss;
@@ -245,10 +246,9 @@ TEST_F(CarAssembleAppTestFixture, PrintChoicePage2) {
     std::string expected = ss.str();
     EXPECT_EQ(actual, expected);
 }
-
 TEST_F(CarAssembleAppTestFixture, PrintChoicePage3) {
     ::testing::internal::CaptureStdout();
-    app.PrintChoicePage(eBrakePage);
+    app.pm.PrintPage(PageEnum::eBrakePage);
     std::string actual = ::testing::internal::GetCapturedStdout();
 
     std::stringstream ss;
@@ -263,10 +263,9 @@ TEST_F(CarAssembleAppTestFixture, PrintChoicePage3) {
     std::string expected = ss.str();
     EXPECT_EQ(actual, expected);
 }
-
 TEST_F(CarAssembleAppTestFixture, PrintChoicePage4) {
     ::testing::internal::CaptureStdout();
-    app.PrintChoicePage(eSteeringPage);
+    app.pm.PrintPage(PageEnum::eSteeringPage);
     std::string actual = ::testing::internal::GetCapturedStdout();
 
     std::stringstream ss;
@@ -280,10 +279,9 @@ TEST_F(CarAssembleAppTestFixture, PrintChoicePage4) {
     std::string expected = ss.str();
     EXPECT_EQ(actual, expected);
 }
-
 TEST_F(CarAssembleAppTestFixture, PrintChoicePage5) {
     ::testing::internal::CaptureStdout();
-    app.PrintChoicePage(eRunOrTestPage);
+    app.pm.PrintPage(PageEnum::eRunOrTestPage);
     std::string actual = ::testing::internal::GetCapturedStdout();
 
     std::stringstream ss;
@@ -299,20 +297,20 @@ TEST_F(CarAssembleAppTestFixture, PrintChoicePage5) {
     EXPECT_EQ(actual, expected);
 }
 
-TEST(CarAssembleAppRunTest, ExitImmediately_PrintsByeAndStops) {
+TEST_F(CarAssembleAppTestFixture, ExitImmediately_PrintsByeAndStops) {
     MockCarAssembleApp app;
 
-    static char s_exit[] = "exit";
+    static char s_exit[5] = "exit";
     EXPECT_CALL(app, GetInput()).WillOnce(Return(s_exit));
 
     ::testing::internal::CaptureStdout();
-    EXPECT_THROW(app.Run(), ExitCalled);
+    EXPECT_THROW({ app.Run(); }, ExitCalled);
     std::string out = ::testing::internal::GetCapturedStdout();
 
     EXPECT_THAT(out, HasSubstr("바이바이"));
 }
 
-TEST(CarAssembleAppRunTest, FullFlow_TestPass_ThenExit) {
+TEST_F(CarAssembleAppTestFixture, FullFlow_TestPass_ThenExit) {
     MockCarAssembleApp app;
     InSequence seq;
 
@@ -340,7 +338,7 @@ TEST(CarAssembleAppRunTest, FullFlow_TestPass_ThenExit) {
     EXPECT_THAT(out, HasSubstr("바이바이"));
 }
 
-TEST(CarAssembleAppRunTest, InvalidInput_ShowsError_ThenExit) {
+TEST_F(CarAssembleAppTestFixture, InvalidInput_ShowsError_ThenExit) {
     MockCarAssembleApp app;
     InSequence seq;
 
@@ -359,7 +357,7 @@ TEST(CarAssembleAppRunTest, InvalidInput_ShowsError_ThenExit) {
     EXPECT_THAT(out, HasSubstr("바이바이"));
 }
 
-TEST(CarAssembleAppRunTest, FullFlow_TestFail_SedanContinentalBrake_ThenExit) {
+TEST_F(CarAssembleAppTestFixture, FullFlow_TestFail_SedanContinentalBrake_ThenExit) {
     MockCarAssembleApp app;
     InSequence seq;
 
@@ -387,7 +385,7 @@ TEST(CarAssembleAppRunTest, FullFlow_TestFail_SedanContinentalBrake_ThenExit) {
     EXPECT_THAT(out, HasSubstr("바이바이"));
 }
 
-TEST(CarAssembleAppRunTest, FullFlow_TestFail_SuvToyotaEngine_ThenExit) {
+TEST_F(CarAssembleAppTestFixture, FullFlow_TestFail_SuvToyotaEngine_ThenExit) {
     MockCarAssembleApp app;
     InSequence seq;
 
@@ -415,7 +413,7 @@ TEST(CarAssembleAppRunTest, FullFlow_TestFail_SuvToyotaEngine_ThenExit) {
     EXPECT_THAT(out, HasSubstr("바이바이"));
 }
 
-TEST(CarAssembleAppRunTest, FullFlow_TestFail_TruckWIAEngine_ThenExit) {
+TEST_F(CarAssembleAppTestFixture, FullFlow_TestFail_TruckWIAEngine_ThenExit) {
     MockCarAssembleApp app;
     InSequence seq;
 
@@ -443,7 +441,7 @@ TEST(CarAssembleAppRunTest, FullFlow_TestFail_TruckWIAEngine_ThenExit) {
     EXPECT_THAT(out, HasSubstr("바이바이"));
 }
 
-TEST(CarAssembleAppRunTest, FullFlow_TestFail_TruckMandoBrake_ThenExit) {
+TEST_F(CarAssembleAppTestFixture, FullFlow_TestFail_TruckMandoBrake_ThenExit) {
     MockCarAssembleApp app;
     InSequence seq;
 
@@ -471,7 +469,7 @@ TEST(CarAssembleAppRunTest, FullFlow_TestFail_TruckMandoBrake_ThenExit) {
     EXPECT_THAT(out, HasSubstr("바이바이"));
 }
 
-TEST(CarAssembleAppRunTest, FullFlow_TestFail_BoschBrakeNotBoshSteering_ThenExit) {
+TEST_F(CarAssembleAppTestFixture, FullFlow_TestFail_BoschBrakeNotBoshSteering_ThenExit) {
     MockCarAssembleApp app;
     InSequence seq;
 
@@ -497,9 +495,4 @@ TEST(CarAssembleAppRunTest, FullFlow_TestFail_BoschBrakeNotBoshSteering_ThenExit
     EXPECT_THAT(out, HasSubstr("자동차 부품 조합 테스트 결과 : FAIL"));
     EXPECT_THAT(out, HasSubstr("Bosch제동장치에는 Bosch조향장치 이외 사용 불가"));
     EXPECT_THAT(out, HasSubstr("바이바이"));
-}
-
-TEST(CarAssembleAppRunTest, TC1) {
-    MockCarAssembleApp app;
-    EXPECT_TRUE(app.IsStartPage(eCarTypePage));
 }
