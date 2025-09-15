@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <chrono>
 #include <thread>
+#include <memory>
 
 #include "CarType.h"
 #include "CarTypeFactory.h"
@@ -20,10 +21,10 @@
 
 class CarAssembleApp {
 public:
-    ICarType *car_type;
-    IEngineType *engine_type;
-    IBrakeType *brake_type;
-    ISteeringType *steering_type;
+    up<ICarType> car_type;
+    up<IEngineType> engine_type;
+    up<IBrakeType> brake_type;
+    up<ISteeringType> steering_type;
 
     PrintManager &pm;
 

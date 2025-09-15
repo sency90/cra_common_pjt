@@ -1,5 +1,15 @@
 ﻿#pragma once
 #include <string>
+#include <memory>
+#include <utility>
+
+template <typename T, typename D = std::default_delete<T>>
+using up = std::unique_ptr<T, D>;
+
+template <typename T, typename... Args>
+inline up<T> make_up(Args&&... args) { 
+    return std::make_unique<T>(std::forward<Args>(args)...);
+}
 
 class CommonFunction {
 private:

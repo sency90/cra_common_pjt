@@ -7,7 +7,9 @@
 #ifdef _WIN32
 #pragma execution_character_set("utf-8")
 #include <windows.h>
+#ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
+#endif
 #endif
 
 #define CLEAR_SCREEN "\033[H\033[2J"

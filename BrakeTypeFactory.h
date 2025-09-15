@@ -11,6 +11,6 @@ enum BrakeEnum {
 
 class BrakeTypeFactory {
 public:
-    static IBrakeType *Create(int enum_no);
+    static up<IBrakeType> Create(int enum_no);
 };
 

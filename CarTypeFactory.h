@@ -11,6 +11,6 @@ enum CarEnum {
 
 class CarTypeFactory {
 public:
-    static ICarType *Create(int enum_no);
+    static up<ICarType> Create(int enum_no);
 };
 

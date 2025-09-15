@@ -11,11 +11,11 @@
         <pre class="prettyprint lang-cpp linenums">
 ï»¿#include "BrakeTypeFactory.h"
 
-<span style = "background-color:#dfd">IBrakeType *BrakeTypeFactory::Create(int enum_no) {
-    if(enum_no == eMANDOBrake) return new MandoBrakeType();
-    else if(enum_no == eCONTINENTALBrake) return new ContinentalBrakeType();
-    else if(enum_no == eBOSCHBrake) return new BoschBrakeType();
-    else return new UnknownBrakeType();
+<span style = "background-color:#dfd">up&lt;IBrakeType&gt; BrakeTypeFactory::Create(int enum_no) {
+    if(enum_no == eMANDOBrake) return make_up&lt;MandoBrakeType&gt;();
+    else if(enum_no == eCONTINENTALBrake) return make_up&lt;ContinentalBrakeType&gt;();
+    else if(enum_no == eBOSCHBrake) return make_up&lt;BoschBrakeType&gt;();
+    else return make_up&lt;UnknownBrakeType&gt;();
 }</span></pre>
         <hr />
         <table width="100%">

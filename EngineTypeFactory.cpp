@@ -1,9 +1,9 @@
 ﻿#include "EngineTypeFactory.h"
 
-IEngineType *EngineTypeFactory::Create(int enum_no) {
-    if(enum_no == eGMEngine) return new GmEngineType();
-    else if(enum_no == eTOYOTAEngine) return new ToyotaEngineType();
-    else if(enum_no == eWIAEngine) return new WiaEngineType();
-    else if(enum_no == eBrokenEngine) return new BrokenEngineType();
-    else return new UnknownEngineType();
+up<IEngineType> EngineTypeFactory::Create(int enum_no) {
+    if(enum_no == eGMEngine) return make_up<GmEngineType>();
+    else if(enum_no == eTOYOTAEngine) return make_up<ToyotaEngineType>();
+    else if(enum_no == eWIAEngine) return make_up<WiaEngineType>();
+    else if(enum_no == eBrokenEngine) return make_up<BrokenEngineType>();
+    else return make_up<UnknownEngineType>();
 }

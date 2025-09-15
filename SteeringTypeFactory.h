@@ -10,6 +10,6 @@ enum SteeringEnum {
 
 class SteeringTypeFactory {
 public:
-    static ISteeringType *Create(int enum_no);
+    static up<ISteeringType> Create(int enum_no);
 };
 

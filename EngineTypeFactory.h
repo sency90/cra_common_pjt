@@ -12,6 +12,6 @@ enum EngineEnum {
 
 class EngineTypeFactory {
 public:
-    static IEngineType *Create(int enum_no);
+    static up<IEngineType> Create(int enum_no);
 };
 
