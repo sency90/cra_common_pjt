@@ -11,4 +11,5 @@ public:
 public:
     std::string ToLower(const std::string &s);
     bool EqualsIgnoreCase(const std::string &s1, const std::string &s2);
+    void PrintSettingForKorean();
 };

@@ -136,6 +136,7 @@
     <ClCompile Include="EngineType.cpp" />
     <ClCompile Include="EngineTypeFactory.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PrintManager.cpp" />
     <ClCompile Include="SteeringType.cpp" />
     <ClCompile Include="SteeringTypeFactory.cpp" />
     <ClCompile Include="test.cpp" />
@@ -153,8 +154,9 @@
     <ClInclude Include="CommonFunction.h" />
     <ClInclude Include="EngineType.h" />
     <ClInclude Include="EngineTypeFactory.h" />
-    <ClInclude Include="Enum.h" />
     <ClInclude Include="IParts.h" />
+    <ClInclude Include="PageEnum.h" />
+    <ClInclude Include="PrintManager.h" />
     <ClInclude Include="SteeringType.h" />
     <ClInclude Include="SteeringTypeFactory.h" />
   </ItemGroup>

@@ -13,6 +13,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Factory">
+      <UniqueIdentifier>{b1d7527e-0797-4b90-9609-79a2e09d9012}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Parts">
+      <UniqueIdentifier>{5efd040b-99f6-43d8-a0cf-d478aa4eca43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Parts\header">
+      <UniqueIdentifier>{9cedf015-de2f-4898-99a0-9cb4cef114ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Factory\header">
+      <UniqueIdentifier>{ff9c18df-47e4-4144-9b36-ec398c5be23e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gtest">
+      <UniqueIdentifier>{33dc9e05-d5e8-4885-8151-7b6c242a87ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -21,40 +36,43 @@
     <ClCompile Include="test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gtest\gtest-all.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gmock\gmock-all.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CarAssembleApp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CarType.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CarTypeFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CommonFunction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EngineType.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="EngineTypeFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BrakeType.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Factory</Filter>
     </ClCompile>
     <ClCompile Include="BrakeTypeFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SteeringType.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Factory</Filter>
     </ClCompile>
     <ClCompile Include="SteeringTypeFactory.cpp">
+      <Filter>Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="CarTypeFactory.cpp">
+      <Filter>Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="BrakeType.cpp">
+      <Filter>Parts</Filter>
+    </ClCompile>
+    <ClCompile Include="SteeringType.cpp">
+      <Filter>Parts</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineType.cpp">
+      <Filter>Parts</Filter>
+    </ClCompile>
+    <ClCompile Include="CarType.cpp">
+      <Filter>Parts</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gtest\gtest-all.cc">
+      <Filter>gtest</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gmock\gmock-all.cc">
+      <Filter>gtest</Filter>
+    </ClCompile>
+    <ClCompile Include="PrintManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -68,37 +86,40 @@
     <ClInclude Include="CarAssembleApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Enum.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CarType.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CarTypeFactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CommonFunction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EngineType.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EngineTypeFactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="BrakeType.h">
-      <Filter>Header Files</Filter>
+      <Filter>Parts\header</Filter>
     </ClInclude>
-    <ClInclude Include="BrakeTypeFactory.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="CarType.h">
+      <Filter>Parts\header</Filter>
     </ClInclude>
-    <ClInclude Include="SteeringType.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SteeringTypeFactory.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="EngineType.h">
+      <Filter>Parts\header</Filter>
     </ClInclude>
     <ClInclude Include="IParts.h">
+      <Filter>Parts\header</Filter>
+    </ClInclude>
+    <ClInclude Include="SteeringType.h">
+      <Filter>Parts\header</Filter>
+    </ClInclude>
+    <ClInclude Include="BrakeTypeFactory.h">
+      <Filter>Factory\header</Filter>
+    </ClInclude>
+    <ClInclude Include="CarTypeFactory.h">
+      <Filter>Factory\header</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineTypeFactory.h">
+      <Filter>Factory\header</Filter>
+    </ClInclude>
+    <ClInclude Include="SteeringTypeFactory.h">
+      <Filter>Factory\header</Filter>
+    </ClInclude>
+    <ClInclude Include="PrintManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PageEnum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

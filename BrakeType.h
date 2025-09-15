@@ -1,11 +1,13 @@
 ﻿#pragma once
+#include <cstdio>
 #include <string>
 #include "IParts.h"
-#define interface struct
 
-interface IBrakeType: public IParts{
-public:
+struct IBrakeType: public IParts {
     virtual const std::string GetName() const=0;
+    void Print() const override {
+        printf("Brake System : %s\n", GetName().c_str());
+    }
     virtual ~IBrakeType()=default;
 };
 

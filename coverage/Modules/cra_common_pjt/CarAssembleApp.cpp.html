@@ -11,80 +11,47 @@
         <pre class="prettyprint lang-cpp linenums">
 ï»¿#include "CarAssembleApp.h"
 
-<span style = "background-color:#dfd">CarAssembleApp::CarAssembleApp() {</span>
-#ifdef _WIN32
-<span style = "background-color:#dfd">    SetConsoleOutputCP(CP_UTF8);
-    SetConsoleCP(CP_UTF8);</span>
+<span style = "background-color:#dfd">CarAssembleApp::CarAssembleApp():pm(PrintManager::GetInstance()) {
+    CommonFunction::GetInstance().PrintSettingForKorean();
+}</span>
+
+<span style = "background-color:#dfd">int CarAssembleApp::Run() {
+    PageEnum current_page(PageEnum::GetStartPage());</span>
+
+<span style = "background-color:#dfd">    while(1) {
+        pm.PrintPage(current_page);</span>
+
+<span style = "background-color:#dfd">        char *input = GetInput();
+        RemoveEndNewLine(input);</span>
+
+<span style = "background-color:#dfd">        if(WhenTypedExit(input)) {
+            ExitProgram();</span>
+        }
+
+        try {
+<span style = "background-color:#dfd">            ValidateInput(input, current_page);</span>
+        }
+<span style = "background-color:#dfd">        catch(std::exception &amp;ex) {
+            printf("ERROR :: %s\n", ex.what());
+            Delay(800);
+            continue;</span>
+<span style = "background-color:#fdd">        }</span>
+
+<span style = "background-color:#dfd">        int answer = ChangeInputTypeToInt(input);
+        SelectParts(answer, current_page);
+        MovePage(answer, current_page);
+    }</span>
+
+<span style = "background-color:#fdd">    return 0;
+}</span>
+
+<span style = "background-color:#dfd">void CarAssembleApp::Delay(int ms) {</span>
+#if _DEBUG
+<span style = "background-color:#dfd">    std::this_thread::sleep_for(std::chrono::milliseconds(ms/10));</span>
+#else
+    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 #endif
-<span style = "background-color:#dfd">    memset(settings, 0, sizeof(settings));
-}</span>
-
-<span style = "background-color:#dfd">void CarAssembleApp::PrintChoiceCarTypePage() {
-    printf("        ______________\n");
-    printf("       /|            | \n");
-    printf("  ____/_|_____________|____\n");
-    printf(" |                      O  |\n");
-    printf(" '-(@)----------------(@)--'\n");
-    printf("===============================\n");
-    printf("ì´ë¤ ì°¨ë íìì ì íí ê¹ì?\n");
-    printf("1. Sedan\n");
-    printf("2. SUV\n");
-    printf("3. Truck\n");
-}</span>
-
-<span style = "background-color:#dfd">void CarAssembleApp::PrintChoiceEngineTypePage() {
-    printf("ì´ë¤ ìì§ì íì¬í ê¹ì?\n");
-    printf("0. ë¤ë¡ê°ê¸°\n");
-    printf("1. GM\n");
-    printf("2. TOYOTA\n");
-    printf("3. WIA\n");
-    printf("4. ê³ ì¥ë ìì§\n");
-}</span>
-
-<span style = "background-color:#dfd">void CarAssembleApp::PrintChoiceBrakeTypePage() {
-    printf("ì´ë¤ ì ëì¥ì¹ë¥¼ ì íí ê¹ì?\n");
-    printf("0. ë¤ë¡ê°ê¸°\n");
-    printf("1. MANDO\n");
-    printf("2. CONTINENTAL\n");
-    printf("3. BOSCH\n");
-}</span>
-
-<span style = "background-color:#dfd">void CarAssembleApp::PrintChoiceSteeringTypePage() {
-    printf("ì´ë¤ ì¡°í¥ì¥ì¹ë¥¼ ì íí ê¹ì?\n");
-    printf("0. ë¤ë¡ê°ê¸°\n");
-    printf("1. BOSCH\n");
-    printf("2. MOBIS\n");
-}</span>
-
-<span style = "background-color:#dfd">void CarAssembleApp::PrintChoiceRunAndTestPage() {
-    printf("ë©ì§ ì°¨ëì´ ìì±ëììµëë¤.\n");
-    printf("ì´ë¤ ëìì í ê¹ì?\n");
-    printf("0. ì²ì íë©´ì¼ë¡ ëìê°ê¸°\n");
-    printf("1. RUN\n");
-    printf("2. Test\n");
-}</span>
-
-<span style = "background-color:#dfd">void CarAssembleApp::PrintChoicePage(int page) {
-    printf(CLEAR_SCREEN);</span>
-
-<span style = "background-color:#dfd">    if(page == eCarTypePage) {
-        PrintChoiceCarTypePage();
-    }
-    else if(page == eEnginePage) {
-        PrintChoiceEngineTypePage();
-    }
-    else if(page == eBrakePage) {
-        PrintChoiceBrakeTypePage();
-    }
-    else if(page == eSteeringPage) {
-        PrintChoiceSteeringTypePage();
-    }
-    else if(page == eRunOrTestPage) {
-        PrintChoiceRunAndTestPage();</span>
-    }
-
-<span style = "background-color:#dfd">    printf("===============================\n");
-}</span>
+<span style = "background-color:#dfd">}</span>
 
 <span style = "background-color:#dfd">bool CarAssembleApp::WhenTypedExit(char *input) {
     return strcmp(input, "exit")==0;
@@ -110,7 +77,7 @@
     strtok_s(input, "\n", &amp;context);
 }</span>
 
-<span style = "background-color:#dfd">void CarAssembleApp::ValidateInput(const char *input, int page) {</span>
+<span style = "background-color:#dfd">void CarAssembleApp::ValidateInput(const char *input, PageEnum page) {</span>
     // ì«ìë¡ ë ëëµì¸ì§ íì¸
     char *checkNumber;
 <span style = "background-color:#dfd">    int answer = strtol(input, &amp;checkNumber, 10); // ë¬¸ìì´ì 10ì§ìë¡ ë³í</span>
@@ -120,23 +87,23 @@
         throw std::invalid_argument("ì«ìë§ ìë ¥ ê°ë¥");</span>
     }
 
-<span style = "background-color:#dfd">    if(page == eCarTypePage &amp;&amp; !(answer &gt;= 1 &amp;&amp; answer &lt;= 3)) {
+<span style = "background-color:#dfd">    if(page == PageEnum::eCarTypePage &amp;&amp; !(answer &gt;= 1 &amp;&amp; answer &lt;= 3)) {
         throw std::invalid_argument("ì°¨ë íìì 1 ~ 3 ë²ìë§ ì í ê°ë¥");</span>
     }
 
-<span style = "background-color:#dfd">    if(page == eEnginePage &amp;&amp; !(answer &gt;= 0 &amp;&amp; answer &lt;= 4)) {
+<span style = "background-color:#dfd">    if(page == PageEnum::eEnginePage &amp;&amp; !(answer &gt;= 0 &amp;&amp; answer &lt;= 4)) {
         throw std::invalid_argument("ìì§ì 1 ~ 4 ë²ìë§ ì í ê°ë¥");</span>
     }
 
-<span style = "background-color:#dfd">    if(page == eBrakePage &amp;&amp; !(answer &gt;= 0 &amp;&amp; answer &lt;= 3)) {
+<span style = "background-color:#dfd">    if(page == PageEnum::eBrakePage &amp;&amp; !(answer &gt;= 0 &amp;&amp; answer &lt;= 3)) {
         throw std::invalid_argument("ì ëì¥ì¹ë 1 ~ 3 ë²ìë§ ì í ê°ë¥");</span>
     }
 
-<span style = "background-color:#dfd">    if(page == eSteeringPage &amp;&amp; !(answer &gt;= 0 &amp;&amp; answer &lt;= 2)) {
+<span style = "background-color:#dfd">    if(page == PageEnum::eSteeringPage &amp;&amp; !(answer &gt;= 0 &amp;&amp; answer &lt;= 2)) {
         throw std::invalid_argument("ì¡°í¥ì¥ì¹ë 1 ~ 2 ë²ìë§ ì í ê°ë¥");</span>
     }
 
-<span style = "background-color:#dfd">    if(page == eRunOrTestPage &amp;&amp; !(answer &gt;= 0 &amp;&amp; answer &lt;= 2)) {
+<span style = "background-color:#dfd">    if(page == PageEnum::eRunOrTestPage &amp;&amp; !(answer &gt;= 0 &amp;&amp; answer &lt;= 2)) {
         throw std::invalid_argument("Run ëë Test ì¤ íëë¥¼ ì í íì");</span>
     }
 <span style = "background-color:#dfd">}</span>
@@ -148,45 +115,55 @@
     return answer;
 }</span>
 
-<span style = "background-color:#fdd">bool CarAssembleApp::IsStartPage(int page) {
-    return page == eCarTypePage;
+<span style = "background-color:#dfd">bool CarAssembleApp::IsSelectGoBackToStartPage(int answer, PageEnum page) {
+    return answer==0 &amp;&amp; page.IsEndPage();
 }</span>
 
-<span style = "background-color:#dfd">bool CarAssembleApp::IsEndPage(int page) {
-    return page == eRunOrTestPage;
+<span style = "background-color:#dfd">bool CarAssembleApp::IsSelectGoBackToPrevPage(int answer, PageEnum page) {
+    return answer==0 &amp;&amp; false==page.IsStartPage() &amp;&amp; false==page.IsEndPage();
 }</span>
 
-<span style = "background-color:#dfd">bool CarAssembleApp::IsSelectGoBackToStartPage(int answer, int page) {
-    return answer==0 &amp;&amp; IsEndPage(page);
-}</span>
+<span style = "background-color:#dfd">void CarAssembleApp::MovePage(int answer, PageEnum &amp;page) {</span>
+    // ì²ìì¼ë¡ ëìê°ê¸°
+<span style = "background-color:#dfd">    if(IsSelectGoBackToStartPage(answer, page)) {</span>
+<span style = "background-color:#fdd">        page.MoveToStartPage();
+        return;</span>
+    }
 
-<span style = "background-color:#dfd">bool CarAssembleApp::IsSelectGoBackToPrevPage(int answer, int page) {
-    return answer==0 &amp;&amp; false==IsStartPage(page) &amp;&amp; false==IsEndPage(page);
-}</span>
+    // ì´ì ì¼ë¡ ëìê°ê¸°
+<span style = "background-color:#dfd">    if(IsSelectGoBackToPrevPage(answer, page)) {</span>
+<span style = "background-color:#fdd">        page.MoveToPrevPage();
+        return;</span>
+    }
 
-<span style = "background-color:#dfd">void CarAssembleApp::SelectParts(int answer, int page) {
-    switch(page) {</span>
-    case eCarTypePage: {
+<span style = "background-color:#dfd">    if(false == page.IsEndPage()) {
+        page.MoveToNextPage();</span>
+    }
+<span style = "background-color:#dfd">}</span>
+
+<span style = "background-color:#dfd">void CarAssembleApp::SelectParts(int answer, PageEnum page) {
+    switch(page.Get()) {</span>
+    case PageEnum::eCarTypePage: {
 <span style = "background-color:#dfd">        SelectCarType(answer);
         Delay(800);
         break;</span>
     }
-    case eEnginePage: {
-<span style = "background-color:#dfd">        SelectEngine(answer);
+    case PageEnum::eEnginePage: {
+<span style = "background-color:#dfd">        SelectEngineType(answer);
         Delay(800);
         break;</span>
     }
-    case eBrakePage: {
-<span style = "background-color:#dfd">        SelectBrake(answer);
+    case PageEnum::eBrakePage: {
+<span style = "background-color:#dfd">        SelectBrakeType(answer);
         Delay(800);
         break;</span>
     }
-    case eSteeringPage: {
-<span style = "background-color:#dfd">        SelectSteering(answer);
+    case PageEnum::eSteeringPage: {
+<span style = "background-color:#dfd">        SelectSteeringType(answer);
         Delay(800);
         break;</span>
     }
-    case eRunOrTestPage: {
+    case PageEnum::eRunOrTestPage: {
 <span style = "background-color:#dfd">        if(answer == 1) {</span>
 <span style = "background-color:#fdd">            RunProducedCar();
         }</span>
@@ -201,146 +178,46 @@
     } //switch
 <span style = "background-color:#dfd">}</span>
 
-<span style = "background-color:#dfd">int CarAssembleApp::GetStartPage() {
-    return eCarTypePage;
-}</span>
-
-<span style = "background-color:#dfd">void CarAssembleApp::SelectNextPage(int answer, int &amp;page) {</span>
-    // ì²ìì¼ë¡ ëìê°ê¸°
-<span style = "background-color:#dfd">    if(IsSelectGoBackToStartPage(answer, page)) {</span>
-<span style = "background-color:#fdd">        page = GetStartPage();
-        return;</span>
-    }
-
-    // ì´ì ì¼ë¡ ëìê°ê¸°
-<span style = "background-color:#dfd">    if(IsSelectGoBackToPrevPage(answer, page)) {</span>
-<span style = "background-color:#fdd">        page--;
-        return;</span>
-    }
-
-<span style = "background-color:#dfd">    if(false == IsEndPage(page)) {
-        page++;</span>
-    }
-<span style = "background-color:#dfd">}</span>
-
-<span style = "background-color:#dfd">int CarAssembleApp::Run() {
-    int current_page = GetStartPage();</span>
-
-<span style = "background-color:#dfd">    while(1) {
-        PrintChoicePage(current_page);</span>
-
-<span style = "background-color:#dfd">        char *input = GetInput();
-        RemoveEndNewLine(input);</span>
-
-<span style = "background-color:#dfd">        if(WhenTypedExit(input)) {
-            ExitProgram();</span>
-        }
-
-        try {
-<span style = "background-color:#dfd">            ValidateInput(input, current_page);</span>
-        }
-<span style = "background-color:#dfd">        catch(std::exception &amp;ex) {
-            printf("ERROR :: %s\n", ex.what());
-            Delay(800);
-            continue;</span>
-<span style = "background-color:#fdd">        }</span>
-
-<span style = "background-color:#dfd">        int answer = ChangeInputTypeToInt(input);
-        SelectParts(answer, current_page);
-        SelectNextPage(answer, current_page);
-    }</span>
-
-<span style = "background-color:#fdd">    return 0;
-}</span>
 
 <span style = "background-color:#dfd">void CarAssembleApp::SelectCarType(int answer) {
-    settings[eCarTypePage] = answer;
-    if(answer == eSedanCar)
-        printf("ì°¨ë íìì¼ë¡ Sedanì ì ííì¨ìµëë¤.\n");
-    if(answer == eSUVCar)
-        printf("ì°¨ë íìì¼ë¡ SUVì ì ííì¨ìµëë¤.\n");
-    if(answer == eTruckCar)
-        printf("ì°¨ë íìì¼ë¡ Truckì ì ííì¨ìµëë¤.\n");
+    car_type = CarTypeFactory::Create(answer);
+    printf("ì°¨ë íìì¼ë¡ %sì ì ííì¨ìµëë¤.\n", car_type-&gt;GetName().c_str());
 }</span>
 
-<span style = "background-color:#dfd">void CarAssembleApp::SelectEngine(int answer) {
-    settings[eEnginePage] = answer;
-    if(answer == eGMEngine)
-        printf("GM ìì§ì ì ííì¨ìµëë¤.\n");
-    if(answer == eTOYOTAEngine)
-        printf("TOYOTA ìì§ì ì ííì¨ìµëë¤.\n");
-    if(answer == eWIAEngine)
-        printf("WIA ìì§ì ì ííì¨ìµëë¤.\n");
+<span style = "background-color:#dfd">void CarAssembleApp::SelectEngineType(int answer) {
+    engine_type = EngineTypeFactory::Create(answer);
+    printf("%s ìì§ì ì ííì¨ìµëë¤.\n", engine_type-&gt;GetName().c_str());
 }</span>
 
-<span style = "background-color:#dfd">void CarAssembleApp::SelectBrake(int answer) {
-    settings[eBrakePage] = answer;
-    if(answer == eMANDOBrake)
-        printf("MANDO ì ëì¥ì¹ë¥¼ ì ííì¨ìµëë¤.\n");
-    if(answer == eCONTINENTALBrake)
-        printf("CONTINENTAL ì ëì¥ì¹ë¥¼ ì ííì¨ìµëë¤.\n");
-    if(answer == eBOSCHBrake)
-        printf("BOSCH ì ëì¥ì¹ë¥¼ ì ííì¨ìµëë¤.\n");
+<span style = "background-color:#dfd">void CarAssembleApp::SelectBrakeType(int answer) {
+    brake_type = BrakeTypeFactory::Create(answer);
+    printf("%s ì ëì¥ì¹ë¥¼ ì ííì¨ìµëë¤.\n", brake_type-&gt;GetName().c_str());
 }</span>
 
-<span style = "background-color:#dfd">void CarAssembleApp::SelectSteering(int answer) {
-    settings[eSteeringPage] = answer;
-    if(answer == eBOSCHSteering)
-        printf("BOSCH ì¡°í¥ì¥ì¹ë¥¼ ì ííì¨ìµëë¤.\n");
-    if(answer == eMOBISSteering)
-        printf("MOBIS ì¡°í¥ì¥ì¹ë¥¼ ì ííì¨ìµëë¤.\n");
-}</span>
-
-<span style = "background-color:#dfd">const char *CarAssembleApp::CurrentCarTypeSettingToString() {
-    return car_type[settings[eCarTypePage]];
-}</span>
-
-<span style = "background-color:#dfd">const char *CarAssembleApp::CurrentEngineSettingToString() {
-    return engine_type[settings[eEnginePage]];
-}</span>
-
-<span style = "background-color:#dfd">const char *CarAssembleApp::CurrentBrakeSettingToString() {
-    return brake_type[settings[eBrakePage]];
-}</span>
-
-<span style = "background-color:#dfd">const char *CarAssembleApp::CurrentSteeringSettingToString() {
-    return steering_type[settings[eSteeringPage]];
+<span style = "background-color:#dfd">void CarAssembleApp::SelectSteeringType(int answer) {
+    steering_type = SteeringTypeFactory::Create(answer);
+    printf("%s ì¡°í¥ì¥ì¹ë¥¼ ì ííì¨ìµëë¤.\n", steering_type-&gt;GetName().c_str());
 }</span>
 
 <span style = "background-color:#dfd">int CarAssembleApp::IsValidCheck() {
-    if(settings[eCarTypePage] == eSedanCar &amp;&amp; settings[eBrakePage] == eCONTINENTALBrake) {
+    CommonFunction &amp;cf = CommonFunction::GetInstance();
+    if(cf.EqualsIgnoreCase(car_type-&gt;GetName(), "Sedan") &amp;&amp; cf.EqualsIgnoreCase(brake_type-&gt;GetName(), "CONTINENTAL")) {
         return false;</span>
 <span style = "background-color:#fdd">    }</span>
-<span style = "background-color:#dfd">    else if(settings[eCarTypePage] == eSUVCar &amp;&amp; settings[eEnginePage] == eTOYOTAEngine) {
+<span style = "background-color:#dfd">    else if(cf.EqualsIgnoreCase(car_type-&gt;GetName(), "SUV") &amp;&amp; cf.EqualsIgnoreCase(engine_type-&gt;GetName(), "TOYOTA")) {
         return false;</span>
 <span style = "background-color:#fdd">    }</span>
-<span style = "background-color:#dfd">    else if(settings[eCarTypePage] == eTruckCar &amp;&amp; settings[eEnginePage] == eWIAEngine) {
+<span style = "background-color:#dfd">    else if(cf.EqualsIgnoreCase(car_type-&gt;GetName(), "Truck") &amp;&amp; cf.EqualsIgnoreCase(engine_type-&gt;GetName(), "WIA")) {
         return false;</span>
 <span style = "background-color:#fdd">    }</span>
-<span style = "background-color:#dfd">    else if(settings[eCarTypePage] == eTruckCar &amp;&amp; settings[eBrakePage] == eMANDOBrake) {
+<span style = "background-color:#dfd">    else if(cf.EqualsIgnoreCase(car_type-&gt;GetName(), "Truck") &amp;&amp; cf.EqualsIgnoreCase(brake_type-&gt;GetName(), "MANDO")) {
         return false;</span>
 <span style = "background-color:#fdd">    }</span>
-<span style = "background-color:#dfd">    else if(settings[eBrakePage] == eBOSCHBrake &amp;&amp; settings[eSteeringPage] != eBOSCHSteering) {
+<span style = "background-color:#dfd">    else if(cf.EqualsIgnoreCase(brake_type-&gt;GetName(), "BOSCH") &amp;&amp; false==cf.EqualsIgnoreCase(steering_type-&gt;GetName(), "BOSCH")) {
         return false;</span>
     }
 
 <span style = "background-color:#dfd">    return true;
-}</span>
-
-<span style = "background-color:#dfd">void CarAssembleApp::PrintAssembledCarType() {
-    printf("Car Type : %s\n", CurrentCarTypeSettingToString());
-}</span>
-
-<span style = "background-color:#dfd">void CarAssembleApp::PrintAssembledCarEngineType() {
-    printf("Engine : %s\n", CurrentEngineSettingToString());
-}</span>
-
-<span style = "background-color:#dfd">void CarAssembleApp::PrintAssembeldCarBrakeType() {
-    printf("Brake System : %s\n", CurrentBrakeSettingToString());
-}</span>
-
-<span style = "background-color:#dfd">void CarAssembleApp::PrintAssembledCarSteeringType() {
-    printf("SteeringSystem : %s\n", CurrentSteeringSettingToString());
 }</span>
 
 <span style = "background-color:#dfd">void CarAssembleApp::RunProducedCar() {
@@ -349,38 +226,39 @@
         return;</span>
     }
 
-<span style = "background-color:#dfd">    if(settings[eEnginePage] == eBrokenEngine) {
+<span style = "background-color:#dfd">    if(engine_type-&gt;GetName() == "BROKEN") {
         printf("ìì§ì´ ê³ ì¥ëììµëë¤.\n");
         printf("ìëì°¨ê° ìì§ì´ì§ ììµëë¤.\n");
         return;</span>
     }
 
-<span style = "background-color:#dfd">    PrintAssembledCarType();
-    PrintAssembledCarEngineType();
-    PrintAssembeldCarBrakeType();
-    PrintAssembledCarSteeringType();</span>
+<span style = "background-color:#dfd">    car_type-&gt;Print();
+    engine_type-&gt;Print();
+    brake_type-&gt;Print();
+    steering_type-&gt;Print();</span>
 
 <span style = "background-color:#dfd">    printf("ìëì°¨ê° ëìë©ëë¤.\n");
 }</span>
 
 <span style = "background-color:#dfd">void CarAssembleApp::TestProducedCar() {
-    if(settings[eCarTypePage] == eSedanCar &amp;&amp; settings[eBrakePage] == eCONTINENTALBrake) {
+    CommonFunction &amp;cf = CommonFunction::GetInstance();
+    if(cf.EqualsIgnoreCase(car_type-&gt;GetName(), "Sedan") &amp;&amp; cf.EqualsIgnoreCase(brake_type-&gt;GetName(), "CONTINENTAL")) {
         printf("ìëì°¨ ë¶í ì¡°í© íì¤í¸ ê²°ê³¼ : FAIL\n");
         printf("Sedanìë Continentalì ëì¥ì¹ ì¬ì© ë¶ê°\n");
     }
-    else if(settings[eCarTypePage] == eSUVCar &amp;&amp; settings[eEnginePage] == eTOYOTAEngine) {
+    else if(cf.EqualsIgnoreCase(car_type-&gt;GetName(), "SUV") &amp;&amp; cf.EqualsIgnoreCase(engine_type-&gt;GetName(), "TOYOTA")) {
         printf("ìëì°¨ ë¶í ì¡°í© íì¤í¸ ê²°ê³¼ : FAIL\n");
         printf("SUVìë TOYOTAìì§ ì¬ì© ë¶ê°\n");
     }
-    else if(settings[eCarTypePage] == eTruckCar &amp;&amp; settings[eEnginePage] == eWIAEngine) {
+    else if(cf.EqualsIgnoreCase(car_type-&gt;GetName(), "Truck") &amp;&amp; cf.EqualsIgnoreCase(engine_type-&gt;GetName(), "WIA")) {
         printf("ìëì°¨ ë¶í ì¡°í© íì¤í¸ ê²°ê³¼ : FAIL\n");
         printf("Truckìë WIAìì§ ì¬ì© ë¶ê°\n");
     }
-    else if(settings[eCarTypePage] == eTruckCar &amp;&amp; settings[eBrakePage] == eMANDOBrake) {
+    else if(cf.EqualsIgnoreCase(car_type-&gt;GetName(), "Truck") &amp;&amp; cf.EqualsIgnoreCase(brake_type-&gt;GetName(), "MANDO")) {
         printf("ìëì°¨ ë¶í ì¡°í© íì¤í¸ ê²°ê³¼ : FAIL\n");
         printf("Truckìë Mandoì ëì¥ì¹ ì¬ì© ë¶ê°\n");
     }
-    else if(settings[eBrakePage] == eBOSCHBrake &amp;&amp; settings[eSteeringPage] != eBOSCHSteering) {
+    else if(cf.EqualsIgnoreCase(brake_type-&gt;GetName(), "BOSCH") &amp;&amp; false == cf.EqualsIgnoreCase(steering_type-&gt;GetName(), "BOSCH")) {
         printf("ìëì°¨ ë¶í ì¡°í© íì¤í¸ ê²°ê³¼ : FAIL\n");
         printf("Boschì ëì¥ì¹ìë Boschì¡°í¥ì¥ì¹ ì´ì¸ ì¬ì© ë¶ê°\n");
     }</span>

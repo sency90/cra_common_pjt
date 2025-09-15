@@ -22,7 +22,7 @@
 #include &lt;memory&gt;
 
 #include "CarAssembleApp.h"
-#include "Enum.h"
+#include "PageEnum.h"
 
 #ifndef CLEAR_SCREEN
 #define CLEAR_SCREEN "\033[H\033[2J"
@@ -57,10 +57,10 @@ protected:
         int brake_type,
 <span style = "background-color:#dfd">        int steering_type</span>
     ) {
-<span style = "background-color:#dfd">        app.settings[PageEnum::eCarTypePage] = car_type;
-        app.settings[PageEnum::eEnginePage] = engine_type;
-        app.settings[PageEnum::eBrakePage] = brake_type;
-        app.settings[PageEnum::eSteeringPage] = steering_type;
+<span style = "background-color:#dfd">        app.car_type = CarTypeFactory::Create(car_type);
+        app.engine_type = EngineTypeFactory::Create(engine_type);
+        app.brake_type = BrakeTypeFactory::Create(brake_type);
+        app.steering_type = SteeringTypeFactory::Create(steering_type);
     }</span>
 
 <span style = "background-color:#dfd">    void SetUp() {</span>
@@ -74,62 +74,62 @@ protected:
 <span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, ValidateInput_WhenNotDigit) {
     std::string input = "a1";
     EXPECT_THROW({</span>
-    app.ValidateInput(input.c_str(), eCarTypePage);
+    app.ValidateInput(input.c_str(), PageEnum::eCarTypePage);
         }, std::invalid_argument);
 <span style = "background-color:#dfd">}
 TEST_F(CarAssembleAppTestFixture, ValidateInput_CarTypeNoOnCarTypePage) {
     std::vector&lt;std::string&gt; exception_inputs = { "0", "4" };
     for(auto input : exception_inputs) {
-        EXPECT_THROW({ app.ValidateInput(input.c_str(), eCarTypePage); }, std::invalid_argument);
+        EXPECT_THROW({ app.ValidateInput(input.c_str(), PageEnum::eCarTypePage); }, std::invalid_argument);
     }</span>
 
 <span style = "background-color:#dfd">    std::vector&lt;std::string&gt; normal_inputs = { "1", "2", "3" };
     for(auto input : normal_inputs) {
-        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), eCarTypePage); });
+        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), PageEnum::eCarTypePage); });
     }
 }
 TEST_F(CarAssembleAppTestFixture, ValidateInput_EngineTypeNoOnEnginePage) {
     std::vector&lt;std::string&gt; exception_inputs = { "-1", "5" };
     for(auto input : exception_inputs) {
-        EXPECT_THROW({ app.ValidateInput(input.c_str(), eEnginePage); }, std::invalid_argument);
+        EXPECT_THROW({ app.ValidateInput(input.c_str(), PageEnum::eEnginePage); }, std::invalid_argument);
     }</span>
 
 <span style = "background-color:#dfd">    std::vector&lt;std::string&gt; normal_inputs = { "0", "1", "2", "3", "4" };
     for(auto input : normal_inputs) {
-        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), eEnginePage); });
+        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), PageEnum::eEnginePage); });
     }
 }
 TEST_F(CarAssembleAppTestFixture, ValidateInput_BrakeTypeNoOnBrakePage) {
     std::vector&lt;std::string&gt; exception_inputs = { "-1", "4" };
     for(auto input : exception_inputs) {
-        EXPECT_THROW({ app.ValidateInput(input.c_str(), eBrakePage); }, std::invalid_argument);
+        EXPECT_THROW({ app.ValidateInput(input.c_str(), PageEnum::eBrakePage); }, std::invalid_argument);
     }</span>
 
 <span style = "background-color:#dfd">    std::vector&lt;std::string&gt; normal_inputs = { "0", "1", "2", "3" };
     for(auto input : normal_inputs) {
-        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), eBrakePage); });
+        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), PageEnum::eBrakePage); });
     }
 }
 TEST_F(CarAssembleAppTestFixture, ValidateInput_SteeringTypeNoOnSteeringPage) {
     std::vector&lt;std::string&gt; exception_inputs = { "-1", "3" };
     for(auto input : exception_inputs) {
-        EXPECT_THROW({ app.ValidateInput(input.c_str(), eSteeringPage); }, std::invalid_argument);
+        EXPECT_THROW({ app.ValidateInput(input.c_str(), PageEnum::eSteeringPage); }, std::invalid_argument);
     }</span>
 
 <span style = "background-color:#dfd">    std::vector&lt;std::string&gt; normal_inputs = { "0", "1", "2" };
     for(auto input : normal_inputs) {
-        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), eSteeringPage); });
+        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), PageEnum::eSteeringPage); });
     }
 }
 TEST_F(CarAssembleAppTestFixture, ValidateInput_OnRunOrTestPage) {
     std::vector&lt;std::string&gt; exception_inputs = { "-1", "3" };
     for(auto input : exception_inputs) {
-        EXPECT_THROW({ app.ValidateInput(input.c_str(), eRunOrTestPage); }, std::invalid_argument);
+        EXPECT_THROW({ app.ValidateInput(input.c_str(), PageEnum::eRunOrTestPage); }, std::invalid_argument);
     }</span>
 
 <span style = "background-color:#dfd">    std::vector&lt;std::string&gt; normal_inputs = { "0", "1", "2" };
     for(auto input : normal_inputs) {
-        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), eRunOrTestPage); });
+        EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), PageEnum::eRunOrTestPage); });
     }
 }
 TEST_F(CarAssembleAppTestFixture, NotWorkingSedan) {
@@ -139,45 +139,40 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingSedan) {
     app.RunProducedCar();
     std::string actual = ::testing::internal::GetCapturedStdout();
     EXPECT_EQ(actual, "ìëì°¨ê° ëìëì§ ììµëë¤\n");
-}</span>
-
-<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, NotWorkingSUV) {
+}
+TEST_F(CarAssembleAppTestFixture, NotWorkingSUV) {
     SetSettings(eSUVCar, eTOYOTAEngine, NONE_SETTING_TYPE, NONE_SETTING_TYPE);</span>
 
 <span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
     app.RunProducedCar();
     std::string actual = ::testing::internal::GetCapturedStdout();
     EXPECT_EQ(actual, "ìëì°¨ê° ëìëì§ ììµëë¤\n");
-}</span>
-
-<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, NotWorkingTruck) {
+}
+TEST_F(CarAssembleAppTestFixture, NotWorkingTruck) {
     SetSettings(eTruckCar, eWIAEngine, NONE_SETTING_TYPE, NONE_SETTING_TYPE);</span>
 
 <span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
     app.RunProducedCar();
     std::string actual = ::testing::internal::GetCapturedStdout();
     EXPECT_EQ(actual, "ìëì°¨ê° ëìëì§ ììµëë¤\n");
-}</span>
-
-<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, NotWorkingTruck2) {
+}
+TEST_F(CarAssembleAppTestFixture, NotWorkingTruck2) {
     SetSettings(eTruckCar, NONE_SETTING_TYPE, eMANDOBrake, NONE_SETTING_TYPE);</span>
 
 <span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
     app.RunProducedCar();
     std::string actual = ::testing::internal::GetCapturedStdout();
     EXPECT_EQ(actual, "ìëì°¨ê° ëìëì§ ììµëë¤\n");
-}</span>
-
-<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, NotWorkingTruck3) {
+}
+TEST_F(CarAssembleAppTestFixture, NotWorkingTruck3) {
     SetSettings(eTruckCar, eWIAEngine, eMANDOBrake, NONE_SETTING_TYPE);</span>
 
 <span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
     app.RunProducedCar();
     std::string actual = ::testing::internal::GetCapturedStdout();
     EXPECT_EQ(actual, "ìëì°¨ê° ëìëì§ ììµëë¤\n");
-}</span>
-
-<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, NotWorkingBoschBrakeAndSteering) {
+}
+TEST_F(CarAssembleAppTestFixture, NotWorkingBoschBrakeAndSteering) {
     SetSettings(NONE_SETTING_TYPE, NONE_SETTING_TYPE, eBOSCHBrake, eMOBISSteering);</span>
 
 <span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
@@ -195,9 +190,8 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingBorkenEngine) {
         "ìì§ì´ ê³ ì¥ëììµëë¤.\n"
         "ìëì°¨ê° ìì§ì´ì§ ììµëë¤.\n";
 <span style = "background-color:#dfd">    EXPECT_EQ(actual, expected);
-}</span>
-
-<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, WorkingCar) {
+}
+TEST_F(CarAssembleAppTestFixture, WorkingCar) {
     SetSettings(eSedanCar, eGMEngine, eMANDOBrake, eBOSCHSteering);</span>
 
 <span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
@@ -205,19 +199,18 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingBorkenEngine) {
     std::string actual = ::testing::internal::GetCapturedStdout();</span>
 
 <span style = "background-color:#dfd">    std::stringstream ss;
-    ss &lt;&lt; "Car Type : " &lt;&lt; app.CurrentCarTypeSettingToString() &lt;&lt; "\n";
-    ss &lt;&lt; "Engine : " &lt;&lt; app.CurrentEngineSettingToString() &lt;&lt; "\n";
-    ss &lt;&lt; "Brake System : " &lt;&lt; app.CurrentBrakeSettingToString() &lt;&lt; "\n";
-    ss &lt;&lt; "SteeringSystem : " &lt;&lt; app.CurrentSteeringSettingToString() &lt;&lt; "\n";
+    ss &lt;&lt; "Car Type : " &lt;&lt; app.car_type-&gt;GetName() &lt;&lt; "\n";
+    ss &lt;&lt; "Engine : " &lt;&lt; app.engine_type-&gt;GetName() &lt;&lt; "\n";
+    ss &lt;&lt; "Brake System : " &lt;&lt; app.brake_type-&gt;GetName() &lt;&lt; "\n";
+    ss &lt;&lt; "SteeringSystem : " &lt;&lt; app.steering_type-&gt;GetName() &lt;&lt; "\n";
     ss &lt;&lt; "ìëì°¨ê° ëìë©ëë¤.\n";</span>
 
 <span style = "background-color:#dfd">    std::string expected = ss.str();
     EXPECT_EQ(actual, expected);
-}</span>
-
-<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, PrintChoicePage1) {
+}
+TEST_F(CarAssembleAppTestFixture, PrintChoicePage1) {
     ::testing::internal::CaptureStdout();
-    app.PrintChoicePage(eCarTypePage);
+    app.pm.PrintPage(PageEnum::eCarTypePage);
     std::string actual = ::testing::internal::GetCapturedStdout();</span>
 
 <span style = "background-color:#dfd">    std::stringstream ss;
@@ -236,11 +229,10 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingBorkenEngine) {
 
 <span style = "background-color:#dfd">    std::string expected = ss.str();
     EXPECT_EQ(actual, expected);
-}</span>
-
-<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, PrintChoicePage2) {
+}
+TEST_F(CarAssembleAppTestFixture, PrintChoicePage2) {
     ::testing::internal::CaptureStdout();
-    app.PrintChoicePage(eEnginePage);
+    app.pm.PrintPage(PageEnum::eEnginePage);
     std::string actual = ::testing::internal::GetCapturedStdout();</span>
 
 <span style = "background-color:#dfd">    std::stringstream ss;
@@ -255,11 +247,10 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingBorkenEngine) {
 
 <span style = "background-color:#dfd">    std::string expected = ss.str();
     EXPECT_EQ(actual, expected);
-}</span>
-
-<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, PrintChoicePage3) {
+}
+TEST_F(CarAssembleAppTestFixture, PrintChoicePage3) {
     ::testing::internal::CaptureStdout();
-    app.PrintChoicePage(eBrakePage);
+    app.pm.PrintPage(PageEnum::eBrakePage);
     std::string actual = ::testing::internal::GetCapturedStdout();</span>
 
 <span style = "background-color:#dfd">    std::stringstream ss;
@@ -273,11 +264,10 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingBorkenEngine) {
 
 <span style = "background-color:#dfd">    std::string expected = ss.str();
     EXPECT_EQ(actual, expected);
-}</span>
-
-<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, PrintChoicePage4) {
+}
+TEST_F(CarAssembleAppTestFixture, PrintChoicePage4) {
     ::testing::internal::CaptureStdout();
-    app.PrintChoicePage(eSteeringPage);
+    app.pm.PrintPage(PageEnum::eSteeringPage);
     std::string actual = ::testing::internal::GetCapturedStdout();</span>
 
 <span style = "background-color:#dfd">    std::stringstream ss;
@@ -290,11 +280,10 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingBorkenEngine) {
 
 <span style = "background-color:#dfd">    std::string expected = ss.str();
     EXPECT_EQ(actual, expected);
-}</span>
-
-<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, PrintChoicePage5) {
+}
+TEST_F(CarAssembleAppTestFixture, PrintChoicePage5) {
     ::testing::internal::CaptureStdout();
-    app.PrintChoicePage(eRunOrTestPage);
+    app.pm.PrintPage(PageEnum::eRunOrTestPage);
     std::string actual = ::testing::internal::GetCapturedStdout();</span>
 
 <span style = "background-color:#dfd">    std::stringstream ss;
@@ -310,20 +299,20 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingBorkenEngine) {
     EXPECT_EQ(actual, expected);
 }</span>
 
-<span style = "background-color:#dfd">TEST(CarAssembleAppRunTest, ExitImmediately_PrintsByeAndStops) {
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, ExitImmediately_PrintsByeAndStops) {
     MockCarAssembleApp app;</span>
 
-    static char s_exit[] = "exit";
+    static char s_exit[5] = "exit";
 <span style = "background-color:#dfd">    EXPECT_CALL(app, GetInput()).WillOnce(Return(s_exit));</span>
 
 <span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
-    EXPECT_THROW(app.Run(), ExitCalled);
+    EXPECT_THROW({ app.Run(); }, ExitCalled);
     std::string out = ::testing::internal::GetCapturedStdout();</span>
 
 <span style = "background-color:#dfd">    EXPECT_THAT(out, HasSubstr("ë°ì´ë°ì´"));
 }</span>
 
-<span style = "background-color:#dfd">TEST(CarAssembleAppRunTest, FullFlow_TestPass_ThenExit) {
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, FullFlow_TestPass_ThenExit) {
     MockCarAssembleApp app;
     InSequence seq;</span>
 
@@ -351,7 +340,7 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingBorkenEngine) {
     EXPECT_THAT(out, HasSubstr("ë°ì´ë°ì´"));
 }</span>
 
-<span style = "background-color:#dfd">TEST(CarAssembleAppRunTest, InvalidInput_ShowsError_ThenExit) {
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, InvalidInput_ShowsError_ThenExit) {
     MockCarAssembleApp app;
     InSequence seq;</span>
 
@@ -370,7 +359,7 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingBorkenEngine) {
     EXPECT_THAT(out, HasSubstr("ë°ì´ë°ì´"));
 }</span>
 
-<span style = "background-color:#dfd">TEST(CarAssembleAppRunTest, FullFlow_TestFail_SedanContinentalBrake_ThenExit) {
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, FullFlow_TestFail_SedanContinentalBrake_ThenExit) {
     MockCarAssembleApp app;
     InSequence seq;</span>
 
@@ -398,7 +387,7 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingBorkenEngine) {
     EXPECT_THAT(out, HasSubstr("ë°ì´ë°ì´"));
 }</span>
 
-<span style = "background-color:#dfd">TEST(CarAssembleAppRunTest, FullFlow_TestFail_SuvToyotaEngine_ThenExit) {
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, FullFlow_TestFail_SuvToyotaEngine_ThenExit) {
     MockCarAssembleApp app;
     InSequence seq;</span>
 
@@ -426,7 +415,7 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingBorkenEngine) {
     EXPECT_THAT(out, HasSubstr("ë°ì´ë°ì´"));
 }</span>
 
-<span style = "background-color:#dfd">TEST(CarAssembleAppRunTest, FullFlow_TestFail_TruckWIAEngine_ThenExit) {
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, FullFlow_TestFail_TruckWIAEngine_ThenExit) {
     MockCarAssembleApp app;
     InSequence seq;</span>
 
@@ -454,7 +443,7 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingBorkenEngine) {
     EXPECT_THAT(out, HasSubstr("ë°ì´ë°ì´"));
 }</span>
 
-<span style = "background-color:#dfd">TEST(CarAssembleAppRunTest, FullFlow_TestFail_TruckMandoBrake_ThenExit) {
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, FullFlow_TestFail_TruckMandoBrake_ThenExit) {
     MockCarAssembleApp app;
     InSequence seq;</span>
 
@@ -482,7 +471,7 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingBorkenEngine) {
     EXPECT_THAT(out, HasSubstr("ë°ì´ë°ì´"));
 }</span>
 
-<span style = "background-color:#dfd">TEST(CarAssembleAppRunTest, FullFlow_TestFail_BoschBrakeNotBoshSteering_ThenExit) {
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, FullFlow_TestFail_BoschBrakeNotBoshSteering_ThenExit) {
     MockCarAssembleApp app;
     InSequence seq;</span>
 

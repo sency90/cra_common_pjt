@@ -12,7 +12,6 @@ enum EngineEnum {
 
 class EngineTypeFactory {
 public:
-    static IEngineType *Create(const std::string &name);
     static IEngineType *Create(int enum_no);
 };
 

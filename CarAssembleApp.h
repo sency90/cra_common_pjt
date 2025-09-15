@@ -6,7 +6,6 @@
 #include <chrono>
 #include <thread>
 
-#include "Enum.h"
 #include "CarType.h"
 #include "CarTypeFactory.h"
 #include "EngineType.h"
@@ -16,21 +15,8 @@
 #include "SteeringType.h"
 #include "SteeringTypeFactory.h"
 #include "CommonFunction.h"
-
-#ifdef _WIN32
-#pragma execution_character_set("utf-8")
-#include <windows.h>
-#endif
-
-#define CLEAR_SCREEN "\033[H\033[2J"
-
-enum PageEnum {
-    eCarTypePage,
-    eEnginePage,
-    eBrakePage,
-    eSteeringPage,
-    eRunOrTestPage,
-};
+#include "PrintManager.h"
+#include "PageEnum.h"
 
 class CarAssembleApp {
 public:
@@ -38,78 +24,39 @@ public:
     IEngineType *engine_type;
     IBrakeType *brake_type;
     ISteeringType *steering_type;
-    //int settings[10];
-    //const char *car_type[4] = { "None", "Sedan", "SUV", "Truck" };
-    //const char *engine_type[4] = { "None", "GM", "TOYOTA", "WIA" };
-    //const char *brake_type[4] = { "None", "Mando", "Continental", "Bosch" };
-    //const char *steering_type[3] = { "None", "Bosch", "Mobis" };
+
+    PrintManager &pm;
 
     CarAssembleApp();
 
-public:
-    void Delay(int ms) {
-#if _DEBUG
-        std::this_thread::sleep_for(std::chrono::milliseconds(ms/10));
-#else
-        std::this_thread::sleep_for(std::chrono::milliseconds(ms));
-#endif
-    }
+    int Run();
 
-    void PrintChoiceCarTypePage();
-    void PrintChoiceEngineTypePage();
-    void PrintChoiceBrakeTypePage();
-    void PrintChoiceSteeringTypePage();
-    void PrintChoiceRunAndTestPage();
-    void PrintChoicePage(int page);
+public:
+    void Delay(int ms);
 
     bool WhenTypedExit(char *input);
-
     virtual void ExitProgram();
 
     virtual char *GetInput();
-
     void RemoveEndNewLine(char *input);
-
-    void ValidateInput(const char *input, int page);
+    void ValidateInput(const char *input, PageEnum page);
 
     //ValidateInput()다음에 ChangeInputTypeToInt()가 실행되어야 한다.
     int ChangeInputTypeToInt(char *input) noexcept;
 
-    bool IsStartPage(int page);
-    bool IsEndPage(int page);
+    bool IsSelectGoBackToStartPage(int answer, PageEnum page);
+    bool IsSelectGoBackToPrevPage(int answer, PageEnum page);
+    void MovePage(int answer, PageEnum &page);
 
-    bool IsSelectGoBackToStartPage(int answer, int page);
-
-    bool IsSelectGoBackToPrevPage(int answer, int page);
-
-    void SelectParts(int answer, int page);
-
-    int GetStartPage();
-
-    void SelectNextPage(int answer, int &page);
-
-
-    int Run();
+    void SelectParts(int answer, PageEnum page);
 
     void SelectCarType(int answer);
-
-    void SelectEngine(int answer);
-
-    void SelectBrake(int answer);
-
-    void SelectSteering(int answer);
+    void SelectEngineType(int answer);
+    void SelectBrakeType(int answer);
+    void SelectSteeringType(int answer);
 
     int IsValidCheck();
 
-    void PrintAssembledCarType();
-
-    void PrintAssembledCarEngineType();
-
-    void PrintAssembeldCarBrakeType();
-
-    void PrintAssembledCarSteeringType();
-
     void RunProducedCar();
-
     void TestProducedCar();
 };

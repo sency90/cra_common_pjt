@@ -1,12 +1,13 @@
 ﻿#pragma once
+#include <cstdio>
 #include <string>
-#include <stdexcept>
 #include "IParts.h"
-#define interface struct
 
-interface ICarType : public IParts{
-public:
+struct ICarType: public IParts {
     virtual const std::string GetName() const=0;
+    void Print() const override {
+        printf("Car Type : %s\n", GetName().c_str());
+    }
     virtual ~ICarType()=default;
 };
 
