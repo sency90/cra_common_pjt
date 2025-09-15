@@ -1,5 +1,5 @@
 ﻿# cra_common_pjt
-CRA 공통과제
+250912 CRA 9차수 공통과제 (cpp)
 
 ---
 # Notice
@@ -16,12 +16,14 @@ SetConsoleCP(CP_UTF8);
 ```
 
 # CheckList
-D1 O
-D2 O
-D3 X
-D4 O
-D5 O
+| Spec | Done |
+| ------------- | ------------- |
+| D1 | O |
+| D2 | O |
+| D3 | O |
+| D4 | O |
+| D5 | X |
 
 # Code Coverage
-code_coverage.png 스크린샷 참고 부탁드립니다.
+![Code Coverage](imgs/code_coverage.png)
 실제 coverage측정 결과는 coverage/index.html 에 있습니다.
