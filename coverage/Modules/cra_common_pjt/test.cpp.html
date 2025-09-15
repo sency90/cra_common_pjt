@@ -180,6 +180,15 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingBoschBrakeAndSteering) {
     std::string actual = ::testing::internal::GetCapturedStdout();
     EXPECT_EQ(actual, "ìëì°¨ê° ëìëì§ ììµëë¤\n");
 }
+TEST_F(CarAssembleAppTestFixture, NotWorkingUnknownSteeringType) {
+    SetSettings(NONE_SETTING_TYPE, NONE_SETTING_TYPE, eBOSCHBrake, NONE_SETTING_TYPE);</span>
+
+<span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
+    app.RunProducedCar();
+    std::string actual = ::testing::internal::GetCapturedStdout();
+    printf("[%s]\n", actual.c_str());
+    EXPECT_EQ(actual, "ìëì°¨ê° ëìëì§ ììµëë¤\n");
+}
 TEST_F(CarAssembleAppTestFixture, NotWorkingBorkenEngine) {
     SetSettings(NONE_SETTING_TYPE, eBrokenEngine, NONE_SETTING_TYPE, NONE_SETTING_TYPE);</span>
 

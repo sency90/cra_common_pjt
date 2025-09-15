@@ -169,6 +169,15 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingBoschBrakeAndSteering) {
     std::string actual = ::testing::internal::GetCapturedStdout();
     EXPECT_EQ(actual, "자동차가 동작되지 않습니다\n");
 }
+TEST_F(CarAssembleAppTestFixture, NotWorkingUnknownSteeringType) {
+    SetSettings(NONE_SETTING_TYPE, NONE_SETTING_TYPE, eBOSCHBrake, NONE_SETTING_TYPE);
+
+    ::testing::internal::CaptureStdout();
+    app.RunProducedCar();
+    std::string actual = ::testing::internal::GetCapturedStdout();
+    printf("[%s]\n", actual.c_str());
+    EXPECT_EQ(actual, "자동차가 동작되지 않습니다\n");
+}
 TEST_F(CarAssembleAppTestFixture, NotWorkingBorkenEngine) {
     SetSettings(NONE_SETTING_TYPE, eBrokenEngine, NONE_SETTING_TYPE, NONE_SETTING_TYPE);
 
