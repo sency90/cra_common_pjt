@@ -25,7 +25,8 @@
         RemoveEndNewLine(input);</span>
 
 <span style = "background-color:#dfd">        if(WhenTypedExit(input)) {
-            ExitProgram();</span>
+            printf("ë°ì´ë°ì´\n");
+            break;</span>
         }
 
         try {
@@ -42,12 +43,12 @@
         MovePage(answer, current_page);
     }</span>
 
-<span style = "background-color:#fdd">    return 0;
+<span style = "background-color:#dfd">    return 0;
 }</span>
 
 <span style = "background-color:#dfd">void CarAssembleApp::Delay(int ms) {</span>
 #if _DEBUG
-<span style = "background-color:#dfd">    std::this_thread::sleep_for(std::chrono::milliseconds(ms/10));</span>
+<span style = "background-color:#dfd">    std::this_thread::sleep_for(std::chrono::milliseconds(ms/100));</span>
 #else
     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 #endif
@@ -57,15 +58,10 @@
     return strcmp(input, "exit")==0;
 }</span>
 
-<span style = "background-color:#fdd">void CarAssembleApp::ExitProgram() {
-    printf("ë°ì´ë°ì´\n");
-    exit(0);
-}</span>
-
-<span style = "background-color:#fdd">char *CarAssembleApp::GetInput() {</span>
+<span style = "background-color:#dfd">char *CarAssembleApp::GetInput() {</span>
     static char input[128];
 
-<span style = "background-color:#fdd">    printf("INPUT &gt; ");
+<span style = "background-color:#dfd">    printf("INPUT &gt; ");
     fgets(input, sizeof(input), stdin);
     return input;
 }</span>
@@ -125,14 +121,14 @@
 
 <span style = "background-color:#dfd">void CarAssembleApp::MovePage(int answer, PageEnum &amp;page) {</span>
     // ì²ìì¼ë¡ ëìê°ê¸°
-<span style = "background-color:#dfd">    if(IsSelectGoBackToStartPage(answer, page)) {</span>
-<span style = "background-color:#fdd">        page.MoveToStartPage();
+<span style = "background-color:#dfd">    if(IsSelectGoBackToStartPage(answer, page)) {
+        page.MoveToStartPage();
         return;</span>
     }
 
     // ì´ì ì¼ë¡ ëìê°ê¸°
-<span style = "background-color:#dfd">    if(IsSelectGoBackToPrevPage(answer, page)) {</span>
-<span style = "background-color:#fdd">        page.MoveToPrevPage();
+<span style = "background-color:#dfd">    if(IsSelectGoBackToPrevPage(answer, page)) {
+        page.MoveToPrevPage();
         return;</span>
     }
 
@@ -164,10 +160,10 @@
         break;</span>
     }
     case PageEnum::eRunOrTestPage: {
-<span style = "background-color:#dfd">        if(answer == 1) {</span>
-<span style = "background-color:#fdd">            RunProducedCar();
-        }</span>
-<span style = "background-color:#dfd">        else if(answer == 2) {
+<span style = "background-color:#dfd">        if(answer == 1) {
+            RunProducedCar();
+        }
+        else if(answer == 2) {
             printf("Test...\n");
             Delay(1500);
             TestProducedCar();</span>

@@ -6,7 +6,7 @@
 struct ISteeringType: public IParts {
     virtual const std::string GetName() const=0;
     void Print() const override {
-        printf("SteeringSystem : %s\n", GetName().c_str());
+        printf("Steering System : %s\n", GetName().c_str());
     }
     virtual ~ISteeringType()=default;
 };

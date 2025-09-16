@@ -36,7 +36,6 @@ public:
     void Delay(int ms);
 
     bool WhenTypedExit(char *input);
-    virtual void ExitProgram();
 
     virtual char *GetInput();
     void RemoveEndNewLine(char *input);

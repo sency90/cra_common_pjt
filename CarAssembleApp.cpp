@@ -14,7 +14,8 @@ int CarAssembleApp::Run() {
         RemoveEndNewLine(input);
 
         if(WhenTypedExit(input)) {
-            ExitProgram();
+            printf("바이바이\n");
+            break;
         }
 
         try {
@@ -36,7 +37,7 @@ int CarAssembleApp::Run() {
 
 void CarAssembleApp::Delay(int ms) {
 #if _DEBUG
-    std::this_thread::sleep_for(std::chrono::milliseconds(ms/10));
+    std::this_thread::sleep_for(std::chrono::milliseconds(ms/100));
 #else
     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 #endif
@@ -44,11 +45,6 @@ void CarAssembleApp::Delay(int ms) {
 
 bool CarAssembleApp::WhenTypedExit(char *input) {
     return strcmp(input, "exit")==0;
-}
-
-void CarAssembleApp::ExitProgram() {
-    printf("바이바이\n");
-    exit(0);
 }
 
 char *CarAssembleApp::GetInput() {

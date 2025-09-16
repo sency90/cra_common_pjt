@@ -20,6 +20,8 @@
 #include &lt;vector&gt;
 #include &lt;string&gt;
 #include &lt;memory&gt;
+#include &lt;fstream&gt;
+#include &lt;filesystem&gt;
 
 #include "CarAssembleApp.h"
 #include "PageEnum.h"
@@ -32,17 +34,14 @@ using ::testing::Test;
 using ::testing::InSequence;
 using ::testing::Return;
 using ::testing::HasSubstr;
+namespace fs = std::filesystem;
 
-struct ExitCalled: public std::exception {};
+
+//struct ExitCalled: public std::exception {};
 
 class MockCarAssembleApp: public CarAssembleApp {
 public:
 <span style = "background-color:#dfd">    MOCK_METHOD(char *, GetInput, (), (override));</span>
-
-<span style = "background-color:#dfd">    void ExitProgram() override {
-        printf("ë°ì´ë°ì´\n");
-        throw ExitCalled{};</span>
-<span style = "background-color:#fdd">    }</span>
 };
 
 class CarAssembleAppTestFixture: public Test {
@@ -132,6 +131,13 @@ TEST_F(CarAssembleAppTestFixture, ValidateInput_OnRunOrTestPage) {
         EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), PageEnum::eRunOrTestPage); });
     }
 }
+TEST_F(CarAssembleAppTestFixture, WorkingPartsCombination) {
+    SetSettings(eSedanCar, eGMEngine, eMANDOBrake, eBOSCHSteering);
+    ::testing::internal::CaptureStdout();
+    app.RunProducedCar();
+    std::string actual = ::testing::internal::GetCapturedStdout();
+    EXPECT_THAT(actual, HasSubstr("ìëì°¨ê° ëìë©ëë¤.\n"));
+}
 TEST_F(CarAssembleAppTestFixture, NotWorkingSedan) {
     SetSettings(eSedanCar, NONE_SETTING_TYPE, eCONTINENTALBrake, NONE_SETTING_TYPE);</span>
 
@@ -186,7 +192,6 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingUnknownSteeringType) {
 <span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
     app.RunProducedCar();
     std::string actual = ::testing::internal::GetCapturedStdout();
-    printf("[%s]\n", actual.c_str());
     EXPECT_EQ(actual, "ìëì°¨ê° ëìëì§ ììµëë¤\n");
 }
 TEST_F(CarAssembleAppTestFixture, NotWorkingBorkenEngine) {
@@ -211,7 +216,7 @@ TEST_F(CarAssembleAppTestFixture, WorkingCar) {
     ss &lt;&lt; "Car Type : " &lt;&lt; app.car_type-&gt;GetName() &lt;&lt; "\n";
     ss &lt;&lt; "Engine : " &lt;&lt; app.engine_type-&gt;GetName() &lt;&lt; "\n";
     ss &lt;&lt; "Brake System : " &lt;&lt; app.brake_type-&gt;GetName() &lt;&lt; "\n";
-    ss &lt;&lt; "SteeringSystem : " &lt;&lt; app.steering_type-&gt;GetName() &lt;&lt; "\n";
+    ss &lt;&lt; "Steering System : " &lt;&lt; app.steering_type-&gt;GetName() &lt;&lt; "\n";
     ss &lt;&lt; "ìëì°¨ê° ëìë©ëë¤.\n";</span>
 
 <span style = "background-color:#dfd">    std::string expected = ss.str();
@@ -315,7 +320,7 @@ TEST_F(CarAssembleAppTestFixture, PrintChoicePage5) {
 <span style = "background-color:#dfd">    EXPECT_CALL(app, GetInput()).WillOnce(Return(s_exit));</span>
 
 <span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
-    EXPECT_THROW({ app.Run(); }, ExitCalled);
+    app.Run();
     std::string out = ::testing::internal::GetCapturedStdout();</span>
 
 <span style = "background-color:#dfd">    EXPECT_THAT(out, HasSubstr("ë°ì´ë°ì´"));
@@ -342,7 +347,7 @@ TEST_F(CarAssembleAppTestFixture, PrintChoicePage5) {
         .WillOnce(Return(s6));
 
 <span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
-    EXPECT_THROW(app.Run(), ExitCalled);
+    app.Run();
     std::string out = ::testing::internal::GetCapturedStdout();</span>
 
 <span style = "background-color:#dfd">    EXPECT_THAT(out, HasSubstr("ìëì°¨ ë¶í ì¡°í© íì¤í¸ ê²°ê³¼ : PASS"));
@@ -361,7 +366,7 @@ TEST_F(CarAssembleAppTestFixture, PrintChoicePage5) {
         .WillOnce(Return(s_exit));
 
 <span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
-    EXPECT_THROW(app.Run(), ExitCalled);
+    app.Run();
     std::string out = ::testing::internal::GetCapturedStdout();</span>
 
 <span style = "background-color:#dfd">    EXPECT_THAT(out, HasSubstr("ERROR :: ì«ìë§ ìë ¥ ê°ë¥"));
@@ -388,7 +393,7 @@ TEST_F(CarAssembleAppTestFixture, PrintChoicePage5) {
         .WillOnce(Return(s6));
 
 <span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
-    EXPECT_THROW(app.Run(), ExitCalled);
+    app.Run();
     std::string out = ::testing::internal::GetCapturedStdout();</span>
 
 <span style = "background-color:#dfd">    EXPECT_THAT(out, HasSubstr("ìëì°¨ ë¶í ì¡°í© íì¤í¸ ê²°ê³¼ : FAIL"));
@@ -416,7 +421,7 @@ TEST_F(CarAssembleAppTestFixture, PrintChoicePage5) {
         .WillOnce(Return(s6));
 
 <span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
-    EXPECT_THROW(app.Run(), ExitCalled);
+    app.Run();
     std::string out = ::testing::internal::GetCapturedStdout();</span>
 
 <span style = "background-color:#dfd">    EXPECT_THAT(out, HasSubstr("ìëì°¨ ë¶í ì¡°í© íì¤í¸ ê²°ê³¼ : FAIL"));
@@ -444,7 +449,7 @@ TEST_F(CarAssembleAppTestFixture, PrintChoicePage5) {
         .WillOnce(Return(s6));
 
 <span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
-    EXPECT_THROW(app.Run(), ExitCalled);
+    app.Run();
     std::string out = ::testing::internal::GetCapturedStdout();</span>
 
 <span style = "background-color:#dfd">    EXPECT_THAT(out, HasSubstr("ìëì°¨ ë¶í ì¡°í© íì¤í¸ ê²°ê³¼ : FAIL"));
@@ -472,7 +477,7 @@ TEST_F(CarAssembleAppTestFixture, PrintChoicePage5) {
         .WillOnce(Return(s6));
 
 <span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
-    EXPECT_THROW(app.Run(), ExitCalled);
+    app.Run();
     std::string out = ::testing::internal::GetCapturedStdout();</span>
 
 <span style = "background-color:#dfd">    EXPECT_THAT(out, HasSubstr("ìëì°¨ ë¶í ì¡°í© íì¤í¸ ê²°ê³¼ : FAIL"));
@@ -500,12 +505,125 @@ TEST_F(CarAssembleAppTestFixture, PrintChoicePage5) {
         .WillOnce(Return(s6));
 
 <span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
-    EXPECT_THROW(app.Run(), ExitCalled);
+    app.Run();
     std::string out = ::testing::internal::GetCapturedStdout();</span>
 
 <span style = "background-color:#dfd">    EXPECT_THAT(out, HasSubstr("ìëì°¨ ë¶í ì¡°í© íì¤í¸ ê²°ê³¼ : FAIL"));
     EXPECT_THAT(out, HasSubstr("Boschì ëì¥ì¹ìë Boschì¡°í¥ì¥ì¹ ì´ì¸ ì¬ì© ë¶ê°"));
     EXPECT_THAT(out, HasSubstr("ë°ì´ë°ì´"));
+}</span>
+
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, MoveToStartPage) {
+    MockCarAssembleApp app;
+    InSequence seq;</span>
+
+    //static std::string answer[6] = { "1", "1", "1", "1", "0", "exit" };
+
+    static char s1[] = "1";
+    static char s2[] = "1";
+    static char s3[] = "1";
+    static char s4[] = "1";
+    static char s5[] = "0";
+    static char s6[] = "exit";
+    
+<span style = "background-color:#dfd">    EXPECT_CALL(app, GetInput())</span>
+        .WillOnce(Return(s1))
+        .WillOnce(Return(s2))
+        .WillOnce(Return(s3))
+        .WillOnce(Return(s4))
+        .WillOnce(Return(s5))
+        .WillOnce(Return(s6));
+
+<span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
+    app.Run();
+    std::string out = ::testing::internal::GetCapturedStdout();</span>
+
+<span style = "background-color:#dfd">    auto it = out.find("ì²ì íë©´ì¼ë¡ ëìê°ê¸°");
+    EXPECT_NE(it, std::string::npos);</span>
+
+<span style = "background-color:#dfd">    auto jt = out.find("ì´ë¤ ì°¨ë íìì ì íí ê¹ì?", it);
+    EXPECT_NE(jt, std::string::npos);
+}</span>
+
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, MoveToPrevPage) {
+    MockCarAssembleApp app;
+    InSequence seq;</span>
+
+    static char s1[] = "1";
+    static char s2[] = "0";
+    static char s3[] = "exit";
+
+<span style = "background-color:#dfd">    EXPECT_CALL(app, GetInput())</span>
+        .WillOnce(Return(s1))
+        .WillOnce(Return(s2))
+        .WillOnce(Return(s3));
+
+<span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
+    app.Run();
+    std::string out = ::testing::internal::GetCapturedStdout();</span>
+
+<span style = "background-color:#dfd">    auto it = out.find("0. ë¤ë¡ê°ê¸°\n");
+    EXPECT_NE(it, std::string::npos);</span>
+
+<span style = "background-color:#dfd">    auto jt = out.find("ì´ë¤ ì°¨ë íìì ì íí ê¹ì?\n", it);
+    EXPECT_NE(jt, std::string::npos);
+}</span>
+
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, RunProducedCar) {
+    MockCarAssembleApp app;
+    InSequence seq;</span>
+
+    static char s1[] = "1";
+    static char s2[] = "1";
+    static char s3[] = "1";
+    static char s4[] = "1";
+    static char s5[] = "1";
+    static char s6[] = "exit";
+    
+<span style = "background-color:#dfd">    EXPECT_CALL(app, GetInput())</span>
+        .WillOnce(Return(s1))
+        .WillOnce(Return(s2))
+        .WillOnce(Return(s3))
+        .WillOnce(Return(s4))
+        .WillOnce(Return(s5))
+        .WillOnce(Return(s6));
+
+<span style = "background-color:#dfd">    ::testing::internal::CaptureStdout();
+    app.Run();
+    std::string out = ::testing::internal::GetCapturedStdout();</span>
+
+<span style = "background-color:#dfd">    EXPECT_THAT(out, HasSubstr("Car Type : Sedan\n"));
+    EXPECT_THAT(out, HasSubstr("Engine : GM\n"));
+    EXPECT_THAT(out, HasSubstr("Brake System : MANDO\n"));
+    EXPECT_THAT(out, HasSubstr("Steering System : BOSCH\n"));
+    EXPECT_THAT(out, HasSubstr("ìëì°¨ê° ëìë©ëë¤.\n"));
+}</span>
+
+<span style = "background-color:#dfd">TEST_F(CarAssembleAppTestFixture, GetInputTest) {
+    CarAssembleApp app;</span>
+
+<span style = "background-color:#dfd">    std::ofstream ofs;
+    const std::string fpath = "./tmp_file";
+    std::string out;</span>
+
+    try {
+<span style = "background-color:#dfd">        ofs.open(fpath);
+        ofs &lt;&lt; "exit";
+        ofs.close();</span>
+
+<span style = "background-color:#dfd">        freopen(fpath.c_str(), "r", stdin);
+        ::testing::internal::CaptureStdout();
+        app.Run();
+        out = ::testing::internal::GetCapturedStdout();</span>
+
+<span style = "background-color:#dfd">        fs::remove(fpath.c_str());</span>
+    }
+<span style = "background-color:#dfd">    catch(std::exception &amp;ex) {
+        if(ofs.is_open()) ofs.close();
+        fprintf(stderr, "[EXCEPTION] %s\n", ex.what());
+    }</span>
+
+<span style = "background-color:#dfd">    EXPECT_THAT(out, HasSubstr("ë°ì´ë°ì´"));
 }</span></pre>
         <hr />
         <table width="100%">

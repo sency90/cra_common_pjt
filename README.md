@@ -22,8 +22,12 @@ SetConsoleCP(CP_UTF8);
 | D2 | O |
 | D3 | O |
 | D4 | O |
-| D5 | X |
+| D5 | O |
 
 # Code Coverage
-![Code Coverage](imgs/code_coverage.png)
 실제 coverage측정 결과는 coverage/index.html 에 있습니다.
+![Code Coverage](imgs/CodeCoverage_Summary.png)
+![Detail_1](imgs/CarAssembleApp_CodeCoverage1.png)
+![Detail_2](imgs/CarAssembleApp_CodeCoverage2.png)
+![Detail_3](imgs/CarAssembleApp_CodeCoverage3.png)
+

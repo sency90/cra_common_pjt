@@ -9,6 +9,8 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <fstream>
+#include <filesystem>
 
 #include "CarAssembleApp.h"
 #include "PageEnum.h"
@@ -21,17 +23,14 @@ using ::testing::Test;
 using ::testing::InSequence;
 using ::testing::Return;
 using ::testing::HasSubstr;
+namespace fs = std::filesystem;
 
-struct ExitCalled: public std::exception {};
+
+//struct ExitCalled: public std::exception {};
 
 class MockCarAssembleApp: public CarAssembleApp {
 public:
     MOCK_METHOD(char *, GetInput, (), (override));
-
-    void ExitProgram() override {
-        printf("바이바이\n");
-        throw ExitCalled{};
-    }
 };
 
 class CarAssembleAppTestFixture: public Test {
@@ -121,6 +120,13 @@ TEST_F(CarAssembleAppTestFixture, ValidateInput_OnRunOrTestPage) {
         EXPECT_NO_THROW({ app.ValidateInput(input.c_str(), PageEnum::eRunOrTestPage); });
     }
 }
+TEST_F(CarAssembleAppTestFixture, WorkingPartsCombination) {
+    SetSettings(eSedanCar, eGMEngine, eMANDOBrake, eBOSCHSteering);
+    ::testing::internal::CaptureStdout();
+    app.RunProducedCar();
+    std::string actual = ::testing::internal::GetCapturedStdout();
+    EXPECT_THAT(actual, HasSubstr("자동차가 동작됩니다.\n"));
+}
 TEST_F(CarAssembleAppTestFixture, NotWorkingSedan) {
     SetSettings(eSedanCar, NONE_SETTING_TYPE, eCONTINENTALBrake, NONE_SETTING_TYPE);
 
@@ -175,7 +181,6 @@ TEST_F(CarAssembleAppTestFixture, NotWorkingUnknownSteeringType) {
     ::testing::internal::CaptureStdout();
     app.RunProducedCar();
     std::string actual = ::testing::internal::GetCapturedStdout();
-    printf("[%s]\n", actual.c_str());
     EXPECT_EQ(actual, "자동차가 동작되지 않습니다\n");
 }
 TEST_F(CarAssembleAppTestFixture, NotWorkingBorkenEngine) {
@@ -200,7 +205,7 @@ TEST_F(CarAssembleAppTestFixture, WorkingCar) {
     ss << "Car Type : " << app.car_type->GetName() << "\n";
     ss << "Engine : " << app.engine_type->GetName() << "\n";
     ss << "Brake System : " << app.brake_type->GetName() << "\n";
-    ss << "SteeringSystem : " << app.steering_type->GetName() << "\n";
+    ss << "Steering System : " << app.steering_type->GetName() << "\n";
     ss << "자동차가 동작됩니다.\n";
 
     std::string expected = ss.str();
@@ -304,7 +309,7 @@ TEST_F(CarAssembleAppTestFixture, ExitImmediately_PrintsByeAndStops) {
     EXPECT_CALL(app, GetInput()).WillOnce(Return(s_exit));
 
     ::testing::internal::CaptureStdout();
-    EXPECT_THROW({ app.Run(); }, ExitCalled);
+    app.Run();
     std::string out = ::testing::internal::GetCapturedStdout();
 
     EXPECT_THAT(out, HasSubstr("바이바이"));
@@ -331,7 +336,7 @@ TEST_F(CarAssembleAppTestFixture, FullFlow_TestPass_ThenExit) {
         .WillOnce(Return(s6));
 
     ::testing::internal::CaptureStdout();
-    EXPECT_THROW(app.Run(), ExitCalled);
+    app.Run();
     std::string out = ::testing::internal::GetCapturedStdout();
 
     EXPECT_THAT(out, HasSubstr("자동차 부품 조합 테스트 결과 : PASS"));
@@ -350,7 +355,7 @@ TEST_F(CarAssembleAppTestFixture, InvalidInput_ShowsError_ThenExit) {
         .WillOnce(Return(s_exit));
 
     ::testing::internal::CaptureStdout();
-    EXPECT_THROW(app.Run(), ExitCalled);
+    app.Run();
     std::string out = ::testing::internal::GetCapturedStdout();
 
     EXPECT_THAT(out, HasSubstr("ERROR :: 숫자만 입력 가능"));
@@ -377,7 +382,7 @@ TEST_F(CarAssembleAppTestFixture, FullFlow_TestFail_SedanContinentalBrake_ThenEx
         .WillOnce(Return(s6));
 
     ::testing::internal::CaptureStdout();
-    EXPECT_THROW(app.Run(), ExitCalled);
+    app.Run();
     std::string out = ::testing::internal::GetCapturedStdout();
 
     EXPECT_THAT(out, HasSubstr("자동차 부품 조합 테스트 결과 : FAIL"));
@@ -405,7 +410,7 @@ TEST_F(CarAssembleAppTestFixture, FullFlow_TestFail_SuvToyotaEngine_ThenExit) {
         .WillOnce(Return(s6));
 
     ::testing::internal::CaptureStdout();
-    EXPECT_THROW(app.Run(), ExitCalled);
+    app.Run();
     std::string out = ::testing::internal::GetCapturedStdout();
 
     EXPECT_THAT(out, HasSubstr("자동차 부품 조합 테스트 결과 : FAIL"));
@@ -433,7 +438,7 @@ TEST_F(CarAssembleAppTestFixture, FullFlow_TestFail_TruckWIAEngine_ThenExit) {
         .WillOnce(Return(s6));
 
     ::testing::internal::CaptureStdout();
-    EXPECT_THROW(app.Run(), ExitCalled);
+    app.Run();
     std::string out = ::testing::internal::GetCapturedStdout();
 
     EXPECT_THAT(out, HasSubstr("자동차 부품 조합 테스트 결과 : FAIL"));
@@ -461,7 +466,7 @@ TEST_F(CarAssembleAppTestFixture, FullFlow_TestFail_TruckMandoBrake_ThenExit) {
         .WillOnce(Return(s6));
 
     ::testing::internal::CaptureStdout();
-    EXPECT_THROW(app.Run(), ExitCalled);
+    app.Run();
     std::string out = ::testing::internal::GetCapturedStdout();
 
     EXPECT_THAT(out, HasSubstr("자동차 부품 조합 테스트 결과 : FAIL"));
@@ -489,10 +494,123 @@ TEST_F(CarAssembleAppTestFixture, FullFlow_TestFail_BoschBrakeNotBoshSteering_Th
         .WillOnce(Return(s6));
 
     ::testing::internal::CaptureStdout();
-    EXPECT_THROW(app.Run(), ExitCalled);
+    app.Run();
     std::string out = ::testing::internal::GetCapturedStdout();
 
     EXPECT_THAT(out, HasSubstr("자동차 부품 조합 테스트 결과 : FAIL"));
     EXPECT_THAT(out, HasSubstr("Bosch제동장치에는 Bosch조향장치 이외 사용 불가"));
+    EXPECT_THAT(out, HasSubstr("바이바이"));
+}
+
+TEST_F(CarAssembleAppTestFixture, MoveToStartPage) {
+    MockCarAssembleApp app;
+    InSequence seq;
+
+    //static std::string answer[6] = { "1", "1", "1", "1", "0", "exit" };
+
+    static char s1[] = "1";
+    static char s2[] = "1";
+    static char s3[] = "1";
+    static char s4[] = "1";
+    static char s5[] = "0";
+    static char s6[] = "exit";
+    
+    EXPECT_CALL(app, GetInput())
+        .WillOnce(Return(s1))
+        .WillOnce(Return(s2))
+        .WillOnce(Return(s3))
+        .WillOnce(Return(s4))
+        .WillOnce(Return(s5))
+        .WillOnce(Return(s6));
+
+    ::testing::internal::CaptureStdout();
+    app.Run();
+    std::string out = ::testing::internal::GetCapturedStdout();
+
+    auto it = out.find("처음 화면으로 돌아가기");
+    EXPECT_NE(it, std::string::npos);
+
+    auto jt = out.find("어떤 차량 타입을 선택할까요?", it);
+    EXPECT_NE(jt, std::string::npos);
+}
+
+TEST_F(CarAssembleAppTestFixture, MoveToPrevPage) {
+    MockCarAssembleApp app;
+    InSequence seq;
+
+    static char s1[] = "1";
+    static char s2[] = "0";
+    static char s3[] = "exit";
+
+    EXPECT_CALL(app, GetInput())
+        .WillOnce(Return(s1))
+        .WillOnce(Return(s2))
+        .WillOnce(Return(s3));
+
+    ::testing::internal::CaptureStdout();
+    app.Run();
+    std::string out = ::testing::internal::GetCapturedStdout();
+
+    auto it = out.find("0. 뒤로가기\n");
+    EXPECT_NE(it, std::string::npos);
+
+    auto jt = out.find("어떤 차량 타입을 선택할까요?\n", it);
+    EXPECT_NE(jt, std::string::npos);
+}
+
+TEST_F(CarAssembleAppTestFixture, RunProducedCar) {
+    MockCarAssembleApp app;
+    InSequence seq;
+
+    static char s1[] = "1";
+    static char s2[] = "1";
+    static char s3[] = "1";
+    static char s4[] = "1";
+    static char s5[] = "1";
+    static char s6[] = "exit";
+    
+    EXPECT_CALL(app, GetInput())
+        .WillOnce(Return(s1))
+        .WillOnce(Return(s2))
+        .WillOnce(Return(s3))
+        .WillOnce(Return(s4))
+        .WillOnce(Return(s5))
+        .WillOnce(Return(s6));
+
+    ::testing::internal::CaptureStdout();
+    app.Run();
+    std::string out = ::testing::internal::GetCapturedStdout();
+
+    EXPECT_THAT(out, HasSubstr("Car Type : Sedan\n"));
+    EXPECT_THAT(out, HasSubstr("Engine : GM\n"));
+    EXPECT_THAT(out, HasSubstr("Brake System : MANDO\n"));
+    EXPECT_THAT(out, HasSubstr("Steering System : BOSCH\n"));
+    EXPECT_THAT(out, HasSubstr("자동차가 동작됩니다.\n"));
+}
+
+TEST_F(CarAssembleAppTestFixture, GetInputTest) {
+    CarAssembleApp app;
+
+    std::ofstream ofs;
+    const std::string fpath = "./tmp_file";
+    std::string out;
+
+    try {
+        ofs.open(fpath);
+        ofs << "exit";
+        ofs.close();
+
+        freopen(fpath.c_str(), "r", stdin);
+        ::testing::internal::CaptureStdout();
+        app.Run();
+        out = ::testing::internal::GetCapturedStdout();
+
+        fs::remove(fpath.c_str());
+    }
+    catch(std::exception &ex) {
+        if(ofs.is_open()) ofs.close();
+        fprintf(stderr, "[EXCEPTION] %s\n", ex.what());
+    }
+
     EXPECT_THAT(out, HasSubstr("바이바이"));
 }
